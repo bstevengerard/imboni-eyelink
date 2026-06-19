@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- TODO: Set the document title to the name of your application -->
+    <title>Imboni EyeLink</title>
+    <meta name="description" content="Imboni EyeLink Project">
+    <meta name="author" content="bsteven" />
+
+    <!-- TODO: Update og:title to match your application name -->
+    
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/657dcd1e-b5ff-4664-b7ce-708dcbffb923/id-preview-5042598b--39f160be-c266-4b58-8001-b14b221c1112.lovable.app-1771670456680.png">
+
+    <link rel="icon" type="image/png" href="/IMBONI.png">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none'" />
+    <meta property="og:title" content="Imboni EyeLink">
+  <meta name="twitter:title" content="Imboni EyeLink">
+  <meta property="og:description" content="Imboni EyeLink Project">
+  <meta name="twitter:description" content="Imboni EyeLink Project">
+  <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/657dcd1e-b5ff-4664-b7ce-708dcbffb923/id-preview-5042598b--39f160be-c266-4b58-8001-b14b221c1112.lovable.app-1771670456680.png">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+
+  <body>
+    <script>
+      // Force light mode by default - remove any system dark mode preference
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        localStorage.theme = 'light';
+      }
+      document.documentElement.classList.remove('dark');
+    </script>
+    <script>
+      // Filter out Chrome extension errors
+      const originalError = console.error;
+      console.error = function(...args) {
+        if (args[0] && typeof args[0] === 'string' && 
+            (args[0].includes('all-frames.js') || 
+             args[0].includes('content-all.js') || 
+             args[0].includes('Receiving end does not exist') ||
+             args[0].includes('play() request was interrupted'))) {
+          return; // Suppress extension errors
+        }
+        originalError.apply(console, args);
+      };
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

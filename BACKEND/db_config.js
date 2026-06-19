@@ -1,0 +1,471 @@
+const mongoose = require('mongoose');
+
+if (!process.env.MONGO_URI && !process.env.MONGODB_URI) {
+  console.error('[db_config] Missing MONGO_URI. Check BACKEND/.env');
+}
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+async function connectDb() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log('[db_config] MongoDB connected');
+  } catch (err) {
+    console.error('[db_config] MongoDB connection failed:', err.message);
+    throw err;
+  }
+}
+
+const idCounterSchema = new mongoose.Schema({
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 },
+}, { collection: 'id_counters' });
+
+const IdCounter = mongoose.model('IdCounter', idCounterSchema);
+
+// Schemas
+const hospitalSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  region: String,
+  district: String,
+  address: String,
+  phone: String,
+  hours: String,
+  rating: { type: Number, default: 0 },
+  services: [String],
+  featured: { type: Boolean, default: false },
+  photo_url: String,
+}, { timestamps: true });
+
+hospitalSchema.index({ name: 1 });
+hospitalSchema.index({ featured: 1, name: 1 });
+
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password_hash: { type: String, required: true },
+  name: { type: String, required: true },
+  role: { type: String, enum: ['patient', 'doctor', 'admin', 'optometrist'], required: true },
+  pt_id: { type: String, unique: true, sparse: true }, // Patient ID like 2025IBN001
+  dr_id: { type: String, unique: true, sparse: true }, // Doctor ID like 2025DR001
+  status: { type: String, enum: ['active', 'inactive', 'pending'], default: 'pending' },
+  hospital_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Hospital', default: null },
+  specialty: String,
+  phone: String,
+  district: String,
+  last_login: Date,
+  // Doctor-specific fields
+  licenseNumber: String,
+  hospital: String,
+  experience: String,
+  education: String,
+  languages: [String],
+  bio: String,
+  availability: {
+    monday: String,
+    tuesday: String,
+    wednesday: String,
+    thursday: String,
+    friday: String,
+    saturday: String,
+    sunday: String,
+  },
+}, { timestamps: true });
+
+const serviceTypeSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: String,
+  duration_minutes: Number,
+  price: Number
+}, { timestamps: true });
+
+serviceTypeSchema.index({ name: 1 });
+
+const appointmentSchema = new mongoose.Schema({
+  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  service_type_id: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceType', default: null },
+  type: { type: String, required: true },
+  status: { type: String, enum: ['pending', 'confirmed', 'completed', 'cancelled'], default: 'pending' },
+  scheduled_at: { type: Date, required: true },
+  location: String,
+  is_virtual: { type: Boolean, default: false },
+  meeting_uri: String,
+  notes: String,
+}, { timestamps: true });
+
+const medicalRecordSchema = new mongoose.Schema({
+  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  appointment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', default: null },
+  title: { type: String, required: true },
+  type: { type: String, required: true },
+  record_date: { type: Date, required: true },
+  summary: String,
+  findings: Object,
+  recommendations: String,
+  diagnosis: String,
+  treatmentPlan: String,
+  medications: [{
+    medication: { type: String, required: true },
+    dosage: String,
+    duration: String,
+  }],
+  visualAcuity: {
+    right: String,
+    left: String,
+    both: String,
+  },
+  intraocularPressure: {
+    right: String,
+    left: String,
+  },
+  attachments: [{
+    url: String,
+    filename: String,
+  }],
+}, { timestamps: true });
+
+const prescriptionSchema = new mongoose.Schema({
+  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  appointment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', default: null },
+  content: { type: String, required: true },
+  status: { type: String, enum: ['active', 'refilled', 'expired'], default: 'active' },
+}, { timestamps: true });
+
+const notificationSchema = new mongoose.Schema({
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, required: true },
+  body: String,
+  type: { type: String, enum: ['info', 'success', 'warning', 'error'], default: 'info' },
+  read: { type: Boolean, default: false },
+}, { timestamps: true });
+
+const mobileClinicSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  location: { type: String, required: true },
+  status: { type: String, enum: ['active', 'maintenance', 'scheduled'], default: 'active' },
+  equipment: String,
+  patients_served: { type: Number, default: 0 },
+  next_visit: Date,
+  photo_url: String,
+}, { timestamps: true });
+
+const clinicScheduleSchema = new mongoose.Schema({
+  clinic_id: { type: mongoose.Schema.Types.ObjectId, ref: 'MobileClinic', required: true },
+  location_detail: String,
+  schedule_date: { type: Date, required: true },
+  time_slot: String,
+  expected_patients: { type: Number, default: 0 },
+}, { timestamps: true });
+
+mobileClinicSchema.index({ status: 1, name: 1 });
+clinicScheduleSchema.index({ clinic_id: 1, schedule_date: 1 });
+
+const conversationSchema = new mongoose.Schema({
+  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+}, { timestamps: true });
+
+conversationSchema.index({ patient_id: 1, doctor_id: 1 }, { unique: true });
+
+const messageSchema = new mongoose.Schema({
+  conversation_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Conversation',
+    required: true,
+  },
+  sender_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+
+  // Encrypted payload (server-side encryption at rest)
+  ciphertext: { type: String, required: true },
+  iv: { type: String, required: true },
+  encryptionVersion: { type: String, default: 'v1' },
+
+  // Receipts
+  deliveredAtBy: [{
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    deliveredAt: { type: Date, required: true },
+  }],
+  seenAtBy: [{
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    seenAt: { type: Date, required: true },
+  }],
+}, { timestamps: true });
+
+// Virtual for text (backward compatibility)
+messageSchema.virtual('text').get(function() {
+  const ENCRYPTION_KEY = process.env.MESSAGE_ENCRYPTION_KEY || 'dev-only-insecure-change-me-32bytes-min';
+  const MESSAGE_ENCRYPTION_ALGO = 'aes-256-gcm';
+  
+  function getKey32() {
+    return require('crypto').createHash('sha256').update(String(ENCRYPTION_KEY)).digest();
+  }
+  
+  function decryptText(ciphertextB64, ivB64) {
+    const crypto = require('crypto');
+    const raw = Buffer.from(String(ciphertextB64), 'base64');
+    if (raw.length < 16) return '';
+    const tag = raw.slice(raw.length - 16);
+    const ciphertext = raw.slice(0, raw.length - 16);
+    const iv = Buffer.from(String(ivB64), 'base64');
+    const decipher = crypto.createDecipheriv(MESSAGE_ENCRYPTION_ALGO, getKey32(), iv);
+    decipher.setAuthTag(tag);
+    return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
+  }
+  
+  if (this.ciphertext && this.iv) {
+    try {
+      return decryptText(this.ciphertext, this.iv);
+    } catch (e) {
+      return '';
+    }
+  }
+  return '';
+});
+
+// Transform for JSON serialization
+messageSchema.set('toJSON', { virtuals: true });
+messageSchema.set('toObject', { virtuals: true });
+
+
+const referralSchema = new mongoose.Schema({
+  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  from_doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  to_doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  to_facility: String,
+  reason: String,
+  priority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
+  status: { type: String, enum: ['pending', 'accepted', 'completed'], default: 'pending' },
+}, { timestamps: true });
+
+const doctorRatingSchema = new mongoose.Schema({
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  appointment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', default: null },
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  comment: String,
+}, { timestamps: true });
+
+const settingSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  value: Object,
+}, { timestamps: true });
+
+const contactMessageSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: String,
+  department: String,
+  subject: { type: String, required: true },
+  message: { type: String, required: true },
+  status: { type: String, enum: ['new', 'read', 'responded'], default: 'new' },
+}, { timestamps: true });
+
+const teamMemberSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  specialty: String,
+  bio: String,
+  photo_url: String,
+  order: { type: Number, default: 0 },
+}, { timestamps: true });
+
+const waitingRoomSchema = new mongoose.Schema({
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  meeting_uri: { type: String, required: true },
+  status: { type: String, enum: ['waiting', 'in_progress', 'completed'], default: 'waiting' },
+  patient_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+}, { timestamps: true });
+
+const testimonialSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  role: { type: String, required: true, default: 'Patient' },
+  location: String,
+  rating: { type: Number, required: true, min: 1, max: 5, default: 5 },
+  content: { type: String, required: true },
+  image_url: String,
+  is_published: { type: Boolean, default: true },
+  order: { type: Number, default: 0 },
+}, { timestamps: true });
+
+const journeyMilestoneSchema = new mongoose.Schema({
+  year: { type: String, required: true },
+  event: { type: String, required: true },
+  is_published: { type: Boolean, default: true },
+  order: { type: Number, default: 0 },
+}, { timestamps: true });
+
+teamMemberSchema.index({ order: 1, createdAt: -1 });
+testimonialSchema.index({ is_published: 1, order: 1, createdAt: -1 });
+journeyMilestoneSchema.index({ is_published: 1, order: 1, createdAt: -1 });
+
+const WaitingRoom = mongoose.model('WaitingRoom', waitingRoomSchema);
+
+// Models
+const Hospital = mongoose.model('Hospital', hospitalSchema);
+const User = mongoose.model('User', userSchema);
+const ServiceType = mongoose.model('ServiceType', serviceTypeSchema);
+const Appointment = mongoose.model('Appointment', appointmentSchema);
+const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);
+const Prescription = mongoose.model('Prescription', prescriptionSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
+const MobileClinic = mongoose.model('MobileClinic', mobileClinicSchema);
+const ClinicSchedule = mongoose.model('ClinicSchedule', clinicScheduleSchema);
+const Conversation = mongoose.model('Conversation', conversationSchema);
+const Message = mongoose.model('Message', messageSchema);
+const Referral = mongoose.model('Referral', referralSchema);
+const DoctorRating = mongoose.model('DoctorRating', doctorRatingSchema);
+const Setting = mongoose.model('Setting', settingSchema);
+const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);
+const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
+const Testimonial = mongoose.model('Testimonial', testimonialSchema);
+const JourneyMilestone = mongoose.model('JourneyMilestone', journeyMilestoneSchema);
+
+// Generate patient ID like 2025IBN001 – atomic counter, no hard limit
+async function generatePatientId() {
+  const year = new Date().getFullYear();
+  const key = `patient_${year}`;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const counter = await IdCounter.findOneAndUpdate(
+        { _id: key },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true },
+      );
+      const num = counter.seq;
+      const padded = String(num).padStart(3, '0');
+      return `${year}IBN${padded}`;
+    } catch (e) {
+      if (e.code === 11000) {
+        await new Promise(r => setTimeout(r, 100));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('Failed to generate patient ID after retries');
+}
+
+// Generate doctor ID like 2025DR001 – atomic counter, no hard limit
+async function generateDoctorId() {
+  const year = new Date().getFullYear();
+  const key = `doctor_${year}`;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const counter = await IdCounter.findOneAndUpdate(
+        { _id: key },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true },
+      );
+      const num = counter.seq;
+      const padded = String(num).padStart(3, '0');
+      return `${year}DR${padded}`;
+    } catch (e) {
+      if (e.code === 11000) {
+        await new Promise(r => setTimeout(r, 100));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('Failed to generate doctor ID after retries');
+}
+
+async function initDb() {
+  await connectDb();
+  await syncIdCounters();
+}
+
+async function syncIdCounters() {
+  const year = new Date().getFullYear();
+
+  try {
+    const db = mongoose.connection.db;
+    await db.collection('users').dropIndex('pt_id_1').catch(() => {});
+    await db.collection('users').dropIndex('dr_id_1').catch(() => {});
+    await db.collection('users').createIndex({ pt_id: 1 }, { unique: true, partialFilterExpression: { pt_id: { $type: 'string' } } });
+    await db.collection('users').createIndex({ dr_id: 1 }, { unique: true, partialFilterExpression: { dr_id: { $type: 'string' } } });
+    await User.updateMany(
+      { $or: [{ role: { $nin: ['patient'] }, pt_id: { $exists: true } }, { role: { $nin: ['doctor', 'optometrist'] }, dr_id: { $exists: true } }] },
+      { $unset: { pt_id: '', dr_id: '' } }
+    );
+  } catch (e) {
+    console.warn('[id_counters] index migration warning:', e.message);
+  }
+
+  try {
+    const dupes = await mongoose.connection.db.collection('id_counters').aggregate([
+      { $group: { _id: '$_id', count: { $sum: 1 }, maxSeq: { $max: '$seq' } } },
+      { $match: { count: { $gt: 1 } } }
+    ]).toArray();
+    for (const dup of dupes) {
+      await mongoose.connection.db.collection('id_counters').deleteMany({ _id: dup._id });
+      await IdCounter.updateOne({ _id: dup._id }, { $set: { seq: dup.maxSeq } }, { upsert: true });
+    }
+  } catch (e) {
+    console.warn('[id_counters] dedup warning:', e.message);
+  }
+
+  try {
+    const ptLast = await User.findOne(
+      { pt_id: { $regex: `^${year}IBN` } }
+    ).sort({ pt_id: -1 }).lean();
+    if (ptLast && ptLast.pt_id) {
+      const m = ptLast.pt_id.match(/(\d+)$/);
+      if (m) {
+        const num = parseInt(m[1], 10);
+      const patientSeq = await IdCounter.findOne({ _id: `patient_${year}` }).lean();
+      if (!patientSeq) {
+        await IdCounter.updateOne({ _id: `patient_${year}` }, { $set: { seq: num } }, { upsert: true });
+      } else {
+        await IdCounter.updateOne({ _id: `patient_${year}` }, { $set: { seq: num } });
+      }
+      }
+    }
+
+    const drLast = await User.findOne(
+      { dr_id: { $regex: `^${year}DR` } }
+    ).sort({ dr_id: -1 }).lean();
+    if (drLast && drLast.dr_id) {
+      const m = drLast.dr_id.match(/(\d+)$/);
+      if (m) {
+        const num = parseInt(m[1], 10);
+      const doctorSeq = await IdCounter.findOne({ _id: `doctor_${year}` }).lean();
+      if (!doctorSeq) {
+        await IdCounter.updateOne({ _id: `doctor_${year}` }, { $set: { seq: num } }, { upsert: true });
+      } else {
+        await IdCounter.updateOne({ _id: `doctor_${year}` }, { $set: { seq: num } });
+      }
+      }
+    }
+  } catch (e) {
+    console.warn('[id_counters] sync warning:', e.message);
+  }
+
+  console.log('[id_counters] synced');
+}
+
+module.exports = {
+  initDb,
+  generatePatientId,
+  generateDoctorId,
+  Hospital,
+  User,
+  ServiceType,
+  Appointment,
+  MedicalRecord,
+  Prescription,
+  Notification,
+  MobileClinic,
+  ClinicSchedule,
+  Conversation,
+  Message,
+  Referral,
+  DoctorRating,
+  Setting,
+  ContactMessage,
+  TeamMember,
+  Testimonial,
+  JourneyMilestone,
+  WaitingRoom,
+};
