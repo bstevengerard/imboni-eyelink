@@ -191,7 +191,7 @@ const corsOrigins = (process.env.CORS_ORIGIN || "*")
   .map((o) => o.trim());
 
 const app = express();
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: corsOrigins }));
 app.use(express.json());
 
 // CSP: prevent clickjacking / framing by other origins.
