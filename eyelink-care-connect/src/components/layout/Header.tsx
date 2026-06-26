@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, BookOpen, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import logo from '@/assets/logo.png';
 import GoogleTranslate from '@/components/GoogleTranslate';
@@ -13,7 +13,10 @@ export default function Header() {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
-    { name: 'Education', href: '/education' },
+    { name: 'Education', href: '/education', children: [
+        { name: 'Research Library', href: '/research' }
+      ]
+    },
     { name: 'Hospitals', href: '/hospitals' },
     { name: 'Contact', href: '/contact' },
   ];
@@ -30,15 +33,49 @@ export default function Header() {
           {/* Desktop Navigation and Actions */}
           <div className="hidden lg:flex items-center gap-4">
             <div className="flex items-center gap-1">
-              {navigation.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={`nav-link ${location.pathname === item.href ? 'active' : ''}`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navigation.map((item) => {
+                const isActive = location.pathname === item.href || (item.children && item.children.some(child => location.pathname === child.href));
+                if (item.children) {
+                  return (
+                    <div key={item.href} className="relative group">
+                      <Link
+                        to={item.href}
+                        className={`nav-link inline-flex items-center gap-1 ${isActive ? 'active' : ''}`}
+                      >
+                        {item.name}
+                        <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
+                      </Link>
+                      <div className="absolute top-full left-0 pt-2 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                        <div className="bg-card border border-border rounded-xl shadow-lg py-2 min-w-48 overflow-hidden">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              to={child.href}
+                              className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
+                                location.pathname === child.href
+                                  ? 'bg-primary/10 text-primary font-medium'
+                                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                              }`}
+                            >
+                              <BookOpen className="h-4 w-4 shrink-0" />
+                              <span>{child.name}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={`nav-link ${isActive ? 'active' : ''}`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
             </div>
             <div className="flex items-center gap-3">
               <GoogleTranslate />
@@ -66,20 +103,40 @@ export default function Header() {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="lg:hidden py-4 border-t border-border animate-slide-up">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {navigation.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={`px-4 py-3 rounded-lg font-medium transition-colors ${
-                    location.pathname === item.href
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
+                <div key={item.href}>
+                  <Link
+                    to={item.href}
+                    className={`px-4 py-3 rounded-lg font-medium transition-colors ${
+                      location.pathname === item.href
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted'
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                  {item.children && (
+                    <div className="ml-4 pl-4 border-l-2 border-border/60 space-y-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          to={child.href}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                            location.pathname === child.href
+                              ? 'bg-primary/10 text-primary font-medium'
+                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                          }`}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                          <span>{child.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
 
               <div className="h-px bg-border my-2" />

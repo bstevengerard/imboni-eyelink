@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Calendar, Truck, Building2,
   BarChart3, Settings, LogOut, Menu, Shield, Users as UsersIcon,
   Stethoscope, TrendingUp, Activity, Eye, HeartPulse, ArrowRight,
-  Clock, UserCheck, Sparkles, Star, Flag
+  Clock, UserCheck, Sparkles, Star, Flag, Mail, BookOpen
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -22,6 +22,8 @@ import ServiceTypes from "@/components/admin/ServiceTypes";
 import SuccessStories from "@/components/admin/SuccessStories";
 import JourneyMilestones from "@/components/admin/JourneyMilestones";
 import AdminAppointments from "@/components/admin/Appointments";
+import ContactMessages from "@/components/admin/ContactMessages";
+import ResearchLibrary from "@/components/admin/ResearchLibrary";
 import { useLiveEvents } from "@/hooks/useLiveEvents";
 import LiveActivityFeed from "@/components/dashboard/LiveActivityFeed";
 
@@ -32,7 +34,9 @@ const navigation = [
   { name: 'Service Types', icon: Stethoscope, href: '/admin/services', component: 'services' },
   { name: 'Success Stories', icon: Star, href: '/admin/success-stories', component: 'successStories' },
   { name: 'Our Journey', icon: Flag, href: '/admin/journey', component: 'journey' },
+  { name: 'Research Library', icon: BookOpen, href: '/admin/research', component: 'research' },
   { name: 'Appointments', icon: Calendar, href: '/admin/appointments', component: 'appointments' },
+  { name: 'Contact Messages', icon: Mail, href: '/admin/contact-messages', component: 'contactMessages' },
   { name: 'Mobile Clinics', icon: Truck, href: '/admin/clinics', component: 'clinics' },
   { name: 'Hospitals', icon: Building2, href: '/admin/hospitals', component: 'hospitals' },
   { name: 'Analytics', icon: BarChart3, href: '/admin/analytics', component: 'analytics' },
@@ -308,11 +312,13 @@ export default function AdminPortal() {
           {activeNav.component === 'services' && <ServiceTypes />}
           {activeNav.component === 'successStories' && <SuccessStories />}
           {activeNav.component === 'journey' && <JourneyMilestones />}
+          {activeNav.component === 'research' && <ResearchLibrary />}
           {activeNav.component === 'hospitals' && <HospitalManagement />}
           {activeNav.component === 'clinics' && <MobileClinics />}
           {activeNav.component === 'analytics' && <Analytics />}
           {activeNav.component === 'settings' && <AdminSettings />}
           {activeNav.component === 'appointments' && <AdminAppointments />}
+          {activeNav.component === 'contactMessages' && <ContactMessages />}
         </main>
       </div>
     </div>

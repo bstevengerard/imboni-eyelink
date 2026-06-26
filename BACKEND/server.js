@@ -34,6 +34,7 @@ const {
   TeamMember,
   Testimonial,
   JourneyMilestone,
+  ResearchArticle,
   WaitingRoom,
 } = require("./db_config");
 const { setupSwagger } = require("./swagger");
@@ -1805,6 +1806,316 @@ app.delete(
         return res.status(404).json({ success: false, message: "Team member not found" });
       }
       res.json({ success: true, message: "Team member deleted" });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+// ============== RESEARCH LIBRARY ==============
+
+/**
+ * @swagger
+ * /api/research:
+ *   get:
+ *     tags: [Public]
+ *     summary: List published research articles
+ *     parameters:
+ *       - name: category
+ *         in: query
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Published research articles
+ */
+app.get("/api/research", async (req, res) => {
+  try {
+    const { category } = req.query;
+    const query = { is_published: true };
+    if (category && typeof category === "string") {
+      query.category = category;
+    }
+    const articles = await ResearchArticle.find(query).sort({ year: -1, createdAt: -1 }).lean();
+    res.json({ success: true, data: articles });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+app.get(
+  "/api/admin/research",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    try {
+      const articles = await ResearchArticle.find({}).sort({ createdAt: -1 }).lean();
+      res.json({ success: true, data: articles });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+app.post(
+  "/api/admin/research",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    const body = req.body || {};
+    const title = typeof body.title === "string" ? body.title.trim() : "";
+    const category = typeof body.category === "string" ? body.category.trim() : "";
+    const abstract = typeof body.abstract === "string" ? body.abstract.trim() : "";
+    const journal = typeof body.journal === "string" ? body.journal.trim() : "";
+    const authors = Array.isArray(body.authors)
+      ? body.authors.filter((a: any) => typeof a === "string" && a.trim())
+      : [];
+    const yearValue = Number(body.year);
+    const citationsValue = Number(body.citations ?? 0);
+
+    if (!title || !category) {
+      return res.status(400).json({ success: false, message: "Title and category are required" });
+    }
+    if (!Number.isFinite(yearValue) || yearValue < 1900 || yearValue > 2100) {
+      return res.status(400).json({ success: false, message: "Year must be a valid number" });
+    }
+
+    try {
+      const article = await ResearchArticle.create({
+        title,
+        category,
+        abstract: abstract || null,
+        journal: journal || null,
+        authors: authors.map((a: string) => a.trim()),
+        year: yearValue,
+        citations: Number.isFinite(citationsValue) ? citationsValue : 0,
+        download_url: typeof body.download_url === "string" ? body.download_url.trim() || null : null,
+        external_url: typeof body.external_url === "string" ? body.external_url.trim() || null : null,
+        is_published: body.is_published !== false,
+      });
+      res.status(201).json({ success: true, data: article });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+app.patch(
+  "/api/admin/research/:id",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    const body = req.body || {};
+    const update: any = {};
+
+    if (typeof body.title === "string") {
+      const t = body.title.trim();
+      if (!t) return res.status(400).json({ success: false, message: "Title is required" });
+      update.title = t;
+    }
+    if (typeof body.category === "string") {
+      const c = body.category.trim();
+      if (!c) return res.status(400).json({ success: false, message: "Category is required" });
+      update.category = c;
+    }
+    if (typeof body.abstract === "string") update.abstract = body.abstract.trim() || null;
+    if (typeof body.journal === "string") update.journal = body.journal.trim() || null;
+    if (Array.isArray(body.authors)) {
+      update.authors = body.authors.filter((a: any) => typeof a === "string" && a.trim()).map((a: string) => a.trim());
+    }
+    if (Object.prototype.hasOwnProperty.call(body, "year")) {
+      const y = Number(body.year);
+      if (!Number.isFinite(y) || y < 1900 || y > 2100) {
+        return res.status(400).json({ success: false, message: "Year must be a valid number" });
+      }
+      update.year = y;
+    }
+    if (Object.prototype.hasOwnProperty.call(body, "citations")) {
+      const c = Number(body.citations);
+      update.citations = Number.isFinite(c) ? c : 0;
+    }
+    if (typeof body.download_url === "string") update.download_url = body.download_url.trim() || null;
+    if (typeof body.external_url === "string") update.external_url = body.external_url.trim() || null;
+    if (Object.prototype.hasOwnProperty.call(body, "is_published")) {
+      update.is_published = body.is_published === true;
+    }
+
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({ success: false, message: "No update data provided" });
+    }
+
+    try {
+      const article = await ResearchArticle.findByIdAndUpdate(req.params.id, update, {
+        new: true,
+        runValidators: true,
+      });
+      if (!article) {
+        return res.status(404).json({ success: false, message: "Article not found" });
+      }
+      res.json({ success: true, data: article });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+app.delete(
+  "/api/admin/research/:id",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    try {
+      const article = await ResearchArticle.findByIdAndDelete(req.params.id);
+      if (!article) {
+        return res.status(404).json({ success: false, message: "Article not found" });
+      }
+      res.json({ success: true, message: "Article deleted" });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+// ============== ADMIN CONTACT MESSAGES ==============
+
+/**
+ * @swagger
+ * /api/admin/contact-messages:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Get all contact messages
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: status
+ *         in: query
+ *         schema:
+ *           type: string
+ *           enum: [new, read, responded]
+ *     responses:
+ *       200:
+ *         description: Contact messages list
+ */
+app.get(
+  "/api/admin/contact-messages",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    const { status } = req.query;
+    try {
+      const query = {};
+      if (status && ["new", "read", "responded"].includes(status as string)) {
+        query.status = status;
+      }
+      const rows = await ContactMessage.find(query).sort({ createdAt: -1 });
+      res.json({ success: true, data: rows });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+/**
+ * @swagger
+ * /api/admin/contact-messages/{id}:
+ *   patch:
+ *     tags: [Admin]
+ *     summary: Update contact message status
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [new, read, responded]
+ *               responded_by:
+ *                 type: string
+ *               response_notes:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Contact message updated
+ */
+app.patch(
+  "/api/admin/contact-messages/:id",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    const body = req.body || {};
+    const update = {};
+
+    if (typeof body.status === "string") {
+      if (!["new", "read", "responded"].includes(body.status)) {
+        return res.status(400).json({ success: false, message: "Invalid status" });
+      }
+      update.status = body.status;
+    }
+    if (typeof body.responded_by === "string") {
+      update.responded_by = body.responded_by.trim();
+    }
+    if (typeof body.response_notes === "string") {
+      update.response_notes = body.response_notes.trim();
+    }
+
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({ success: false, message: "No update data provided" });
+    }
+
+    try {
+      const msg = await ContactMessage.findByIdAndUpdate(req.params.id, update, {
+        new: true,
+        runValidators: true,
+      });
+      if (!msg) {
+        return res.status(404).json({ success: false, message: "Message not found" });
+      }
+      res.json({ success: true, data: msg });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+/**
+ * @swagger
+ * /api/admin/contact-messages/{id}:
+ *   delete:
+ *     tags: [Admin]
+ *     summary: Delete contact message
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Contact message deleted
+ */
+app.delete(
+  "/api/admin/contact-messages/:id",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    try {
+      const msg = await ContactMessage.findByIdAndDelete(req.params.id);
+      if (!msg) {
+        return res.status(404).json({ success: false, message: "Message not found" });
+      }
+      res.json({ success: true, message: "Message deleted" });
     } catch (e) {
       res.status(500).json({ success: false, message: e.message });
     }

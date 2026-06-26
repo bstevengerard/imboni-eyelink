@@ -1,97 +1,70 @@
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Search, FileText, Download, ExternalLink, BookOpen, Filter, Calendar } from "lucide-react";
+import { Search, FileText, Download, ExternalLink, BookOpen, Calendar, Loader2 } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { api } from "@/lib/api";
 
-const researchPapers = [
-  {
-    id: 1,
-    title: "Prevalence of Glaucoma in Rural Rwanda: A Population-Based Study",
-    authors: ["Dr. Jean Baptiste Mugisha", "Dr. Alice Mukamana", "Dr. Emmanuel Niyonzima"],
-    journal: "East African Journal of Ophthalmology",
-    year: 2024,
-    category: "Glaucoma",
-    abstract: "This study examines the prevalence of glaucoma in rural Rwandan communities and identifies key risk factors...",
-    downloadUrl: "#",
-    citations: 45
-  },
-  {
-    id: 2,
-    title: "Impact of Mobile Eye Clinics on Eye Care Access in Underserved Areas",
-    authors: ["Dr. Grace Ishimwe", "Dr. Patrick Ndayisaba"],
-    journal: "African Health Sciences",
-    year: 2023,
-    category: "Healthcare Access",
-    abstract: "An evaluation of mobile eye clinic programs in Rwanda and their effectiveness in improving eye care access...",
-    downloadUrl: "#",
-    citations: 32
-  },
-  {
-    id: 3,
-    title: "Diabetic Retinopathy Screening Using AI: A Rwandan Pilot Study",
-    authors: ["Dr. Jean Baptiste Mugisha", "Dr. Marie Uwimana"],
-    journal: "Digital Health Africa",
-    year: 2024,
-    category: "Technology",
-    abstract: "This pilot study evaluates the use of artificial intelligence for diabetic retinopathy screening in resource-limited settings...",
-    downloadUrl: "#",
-    citations: 28
-  },
-  {
-    id: 4,
-    title: "Pediatric Eye Health in Rwanda: Challenges and Interventions",
-    authors: ["Dr. Alice Mukamana", "Dr. Emmanuel Niyonzima"],
-    journal: "Pediatric Ophthalmology Quarterly",
-    year: 2023,
-    category: "Pediatrics",
-    abstract: "A comprehensive review of pediatric eye health challenges in Rwanda and successful intervention strategies...",
-    downloadUrl: "#",
-    citations: 19
-  },
-  {
-    id: 5,
-    title: "Cataract Surgery Outcomes in Low-Resource Settings",
-    authors: ["Dr. Patrick Ndayisaba", "Dr. Grace Ishimwe", "Dr. Jean Baptiste Mugisha"],
-    journal: "Global Eye Health",
-    year: 2023,
-    category: "Surgery",
-    abstract: "Analysis of cataract surgery outcomes and post-operative care in low-resource healthcare environments...",
-    downloadUrl: "#",
-    citations: 56
-  },
-  {
-    id: 6,
-    title: "Traditional Medicine and Eye Care: Understanding Community Practices",
-    authors: ["Dr. Marie Uwimana"],
-    journal: "Journal of Traditional Medicine",
-    year: 2022,
-    category: "Community Health",
-    abstract: "An ethnographic study exploring traditional eye care practices in Rwandan communities and integration opportunities...",
-    downloadUrl: "#",
-    citations: 12
-  },
-];
-
-const categories = ["All", "Glaucoma", "Healthcare Access", "Technology", "Pediatrics", "Surgery", "Community Health"];
+type ResearchArticle = {
+  _id: string;
+  title: string;
+  authors: string[];
+  journal: string;
+  year: number;
+  category: string;
+  abstract: string;
+  download_url: string | null;
+  external_url: string | null;
+  citations: number;
+  is_published: boolean;
+  createdAt: string;
+};
 
 export default function ResearchLibraryPage() {
+  const [articles, setArticles] = useState<ResearchArticle[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const filteredPapers = researchPapers.filter((paper) => {
-    const matchesSearch = paper.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      paper.authors.some(a => a.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || paper.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const fetchArticles = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get<ResearchArticle[]>("/api/research");
+      if (res.success && Array.isArray(res.data)) {
+        setArticles(res.data);
+      }
+    } catch {
+      // silent fail for public page
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const categories = useMemo(() => {
+    const cats = new Set(articles.map((a) => a.category));
+    return ["All", ...Array.from(cats).sort()];
+  }, [articles]);
+
+  const filteredArticles = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    return articles.filter((paper) => {
+      const matchesSearch = paper.title.toLowerCase().includes(q) ||
+        paper.authors.some((a) => a.toLowerCase().includes(q));
+      const matchesCategory = selectedCategory === "All" || paper.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [articles, searchQuery, selectedCategory]);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero */}
         <section className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-16">
@@ -139,59 +112,73 @@ export default function ResearchLibraryPage() {
         <section className="py-12">
           <div className="container mx-auto px-4">
             <div className="mb-6 flex justify-between items-center">
-              <p className="text-muted-foreground">{filteredPapers.length} publications found</p>
+              <p className="text-muted-foreground">
+                {loading ? "Loading..." : `${filteredArticles.length} publications found`}
+              </p>
             </div>
 
-            <div className="space-y-6">
-              {filteredPapers.map((paper) => (
-                <div key={paper.id} className="card-elevated p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-4 mb-3">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                          <FileText className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold mb-1 hover:text-primary cursor-pointer">{paper.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {paper.authors.join(", ")}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-muted-foreground mb-4 line-clamp-2">{paper.abstract}</p>
-                      
-                      <div className="flex flex-wrap gap-4 text-sm">
-                        <span className="px-3 py-1 bg-primary/10 text-primary rounded-full">{paper.category}</span>
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                          <Calendar className="w-4 h-4" />
-                          {paper.year}
-                        </span>
-                        <span className="text-muted-foreground">{paper.journal}</span>
-                        <span className="text-muted-foreground">{paper.citations} citations</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex lg:flex-col gap-2 shrink-0">
-                      <Button size="sm" className="flex-1 lg:flex-none">
-                        <Download className="w-4 h-4 mr-2" />
-                        Download PDF
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1 lg:flex-none">
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        View Online
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {filteredPapers.length === 0 && (
+            {loading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : filteredArticles.length === 0 ? (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No publications found</h3>
                 <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {filteredArticles.map((paper) => (
+                  <div key={paper._id} className="card-elevated p-6 hover:shadow-lg transition-shadow">
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      <div className="flex-1">
+                        <div className="flex items-start gap-4 mb-3">
+                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <FileText className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-semibold mb-1 hover:text-primary cursor-pointer">{paper.title}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {paper.authors.join(", ")}
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="text-muted-foreground mb-4 line-clamp-2">{paper.abstract}</p>
+
+                        <div className="flex flex-wrap gap-4 text-sm">
+                          <span className="px-3 py-1 bg-primary/10 text-primary rounded-full">{paper.category}</span>
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Calendar className="w-4 h-4" />
+                            {paper.year}
+                          </span>
+                          <span className="text-muted-foreground">{paper.journal}</span>
+                          <span className="text-muted-foreground">{paper.citations} citations</span>
+                        </div>
+                      </div>
+
+                      <div className="flex lg:flex-col gap-2 shrink-0">
+                        {paper.download_url && (
+                          <Button size="sm" className="flex-1 lg:flex-none" asChild>
+                            <a href={paper.download_url} target="_blank" rel="noopener noreferrer">
+                              <Download className="w-4 h-4 mr-2" />
+                              Download PDF
+                            </a>
+                          </Button>
+                        )}
+                        {paper.external_url && (
+                          <Button size="sm" variant="outline" className="flex-1 lg:flex-none" asChild>
+                            <a href={paper.external_url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-4 h-4 mr-2" />
+                              View Online
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

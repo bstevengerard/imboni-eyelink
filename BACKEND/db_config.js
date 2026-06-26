@@ -259,6 +259,8 @@ const contactMessageSchema = new mongoose.Schema({
   subject: { type: String, required: true },
   message: { type: String, required: true },
   status: { type: String, enum: ['new', 'read', 'responded'], default: 'new' },
+  responded_by: String,
+  response_notes: String,
 }, { timestamps: true });
 
 const teamMemberSchema = new mongoose.Schema({
@@ -295,6 +297,20 @@ const journeyMilestoneSchema = new mongoose.Schema({
   order: { type: Number, default: 0 },
 }, { timestamps: true });
 
+const researchArticleSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  authors: [String],
+  journal: String,
+  year: Number,
+  category: { type: String, required: true },
+  abstract: String,
+  download_url: String,
+  external_url: String,
+  citations: { type: Number, default: 0 },
+  is_published: { type: Boolean, default: true },
+}, { timestamps: true });
+
+researchArticleSchema.index({ category: 1, createdAt: -1 });
 teamMemberSchema.index({ order: 1, createdAt: -1 });
 testimonialSchema.index({ is_published: 1, order: 1, createdAt: -1 });
 journeyMilestoneSchema.index({ is_published: 1, order: 1, createdAt: -1 });
@@ -320,6 +336,7 @@ const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);
 const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
 const Testimonial = mongoose.model('Testimonial', testimonialSchema);
 const JourneyMilestone = mongoose.model('JourneyMilestone', journeyMilestoneSchema);
+const ResearchArticle = mongoose.model('ResearchArticle', researchArticleSchema);
 
 // Generate patient ID like 2025IBN001 – atomic counter, no hard limit
 async function generatePatientId() {
