@@ -411,30 +411,9 @@ async function ensureCollections() {
   }
 }
 
-const SUPER_ADMIN_EMAIL = "admin@imbonieyelink.rw";
-const SUPER_ADMIN_PASSWORD = "imboniadmin@";
-const SUPER_ADMIN_NAME = "Super Admin";
-const SUPER_ADMIN_ROLE = "super_admin";
-
-async function ensureSuperAdmin() {
-  const exists = await User.findOne({ email: SUPER_ADMIN_EMAIL });
-  if (exists) return;
-  const bcrypt = require('bcrypt');
-  const hash = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
-  await User.create({
-    email: SUPER_ADMIN_EMAIL,
-    password_hash: hash,
-    name: SUPER_ADMIN_NAME,
-    role: SUPER_ADMIN_ROLE,
-    status: 'active',
-  });
-  console.log('[db] Super admin created');
-}
-
 async function initDb() {
   await connectDb();
   await ensureCollections();
-  await ensureSuperAdmin();
   await syncIdCounters();
 }
 
