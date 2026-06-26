@@ -188,7 +188,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "imboni-eyelink-secret";
 const PORT = process.env.PORT || 5000;
 const corsOrigins = (process.env.CORS_ORIGIN || "*")
   .split(",")
-  .map((o) => o.trim());
+  .map((o) => o.trim())
+  .map((o) => {
+    if (o.startsWith("CORS_ORIGIN=")) return o.slice("CORS_ORIGIN=".length);
+    return o;
+  })
+  .filter(Boolean);
 
 console.log(`[server] CORS origins:`, corsOrigins);
 console.log(`[server] MONGO_URI configured:`, !!process.env.MONGO_URI);

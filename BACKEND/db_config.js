@@ -4,10 +4,16 @@ if (!process.env.MONGO_URI && !process.env.MONGODB_URI) {
   console.error('[db_config] Missing MONGO_URI. Check BACKEND/.env');
 }
 const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
+const normalizedMongoUri = MONGO_URI.replace(/(mongodb\+srv?:\/\/[^/]+)\/\/(.+)/, '$1/$2');
 
 async function connectDb() {
   try {
-    await mongoose.connect(MONGO_URI);
+    const uri = normalizedMongoUri || MONGO_URI;
+    console.log('[db_config] Connecting to MongoDB...');
+    if (normalizedMongoUri !== MONGO_URI) {
+      console.log('[db_config] Normalized MongoDB URI to fix double slashes');
+    }
+    await mongoose.connect(uri);
     console.log('[db_config] MongoDB connected');
   } catch (err) {
     console.error('[db_config] MongoDB connection failed:', err.message);
