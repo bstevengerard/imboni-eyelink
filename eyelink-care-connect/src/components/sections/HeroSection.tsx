@@ -13,33 +13,44 @@ export default function HeroSection() {
   return (
     <section className="section-hero min-h-screen flex items-center pt-20 relative overflow-hidden">
       
-      <div className="container mx-auto px-4 py-20 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="container mx-auto px-4 py-8 sm:py-10 lg:py-14 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-12 items-center">
           {/* Content */}
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-6 animate-fade-in">
-              <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm mb-4 sm:mb-6 animate-fade-in">
+              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
               Rwanda's Digital Eye Health Platform
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-slide-up">
+            <h1
+              className="font-bold text-white leading-tight mb-4 sm:mb-6 animate-slide-up"
+              style={{
+                fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
+              }}
+            >
               See the World Clearly with
               <span className="text-secondary"> IMBONI EyeLink</span>
             </h1>
 
-            <p className="text-xl text-white/80 mb-8 max-w-xl mx-auto lg:mx-0 animate-slide-up stagger-1">
+            <p
+              className="text-white/80 mb-6 sm:mb-8 mx-auto lg:mx-0 animate-slide-up stagger-1"
+              style={{
+                fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
+                maxWidth: '42rem',
+              }}
+            >
               Bridging the gap between communities and quality eye care through mobile clinics, tele-consultations, and cutting-edge digital health solutions.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8 animate-slide-up stagger-2">
-              <Link to="/register">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8 animate-slide-up stagger-2">
+              <Link to="/register" aria-label="Book an Eye Screening">
                 <Button className="btn-hero group">
                   Book an Eye Screening
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link to="/services">
-                <button className="btn-hero-outline">
+              <Link to="/services" aria-label="Explore Our Services">
+                <button className="btn-hero-outline min-h-[44px]">
                   <Video className="h-5 w-5" />
                   Explore Our Services
                 </button>
@@ -47,12 +58,20 @@ export default function HeroSection() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 animate-slide-up stagger-3">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 animate-slide-up stagger-3">
               {stats.map((stat) => (
                 <div key={stat.label} className="stat-badge text-center group hover:bg-white/20 transition-colors">
-                  <stat.icon className="h-5 w-5 mx-auto mb-2 text-secondary group-hover:scale-110 transition-transform" />
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <div className="text-xs text-white/70">{stat.label}</div>
+                  <stat.icon className="h-4 w-4 mx-auto mb-1.5 text-secondary group-hover:scale-110 transition-transform" />
+                  <div
+                    className="font-bold"
+                    style={{
+                      fontSize: 'clamp(1.25rem, 2.2vw, 1.6rem)',
+                      lineHeight: 1.15,
+                    }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div className="text-[0.7rem] sm:text-xs text-white/70">{stat.label}</div>
                 </div>
               ))}
             </div>

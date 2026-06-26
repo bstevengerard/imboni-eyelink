@@ -1868,7 +1868,7 @@ app.post(
     const abstract = typeof body.abstract === "string" ? body.abstract.trim() : "";
     const journal = typeof body.journal === "string" ? body.journal.trim() : "";
     const authors = Array.isArray(body.authors)
-      ? body.authors.filter((a: any) => typeof a === "string" && a.trim())
+      ? body.authors.filter((a) => typeof a === "string" && a.trim())
       : [];
     const yearValue = Number(body.year);
     const citationsValue = Number(body.citations ?? 0);
@@ -1886,7 +1886,7 @@ app.post(
         category,
         abstract: abstract || null,
         journal: journal || null,
-        authors: authors.map((a: string) => a.trim()),
+        authors: authors.map((a) => a.trim()),
         year: yearValue,
         citations: Number.isFinite(citationsValue) ? citationsValue : 0,
         download_url: typeof body.download_url === "string" ? body.download_url.trim() || null : null,
@@ -1906,7 +1906,7 @@ app.patch(
   requireRole("super_admin", "admin"),
   async (req, res) => {
     const body = req.body || {};
-    const update: any = {};
+    const update = {};
 
     if (typeof body.title === "string") {
       const t = body.title.trim();
@@ -1921,7 +1921,7 @@ app.patch(
     if (typeof body.abstract === "string") update.abstract = body.abstract.trim() || null;
     if (typeof body.journal === "string") update.journal = body.journal.trim() || null;
     if (Array.isArray(body.authors)) {
-      update.authors = body.authors.filter((a: any) => typeof a === "string" && a.trim()).map((a: string) => a.trim());
+      update.authors = body.authors.filter((a) => typeof a === "string" && a.trim()).map((a) => a.trim());
     }
     if (Object.prototype.hasOwnProperty.call(body, "year")) {
       const y = Number(body.year);
@@ -2004,7 +2004,7 @@ app.get(
     const { status } = req.query;
     try {
       const query = {};
-      if (status && ["new", "read", "responded"].includes(status as string)) {
+      if (status && ["new", "read", "responded"].includes(String(status))) {
         query.status = status;
       }
       const rows = await ContactMessage.find(query).sort({ createdAt: -1 });
