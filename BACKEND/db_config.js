@@ -412,9 +412,14 @@ async function ensureCollections() {
 }
 
 async function initDb() {
-  await connectDb();
-  await ensureCollections();
-  await syncIdCounters();
+  try {
+    await connectDb();
+    await ensureCollections();
+    await syncIdCounters();
+    console.log('[db] Initialization complete');
+  } catch (e) {
+    console.error('[db] Initialization failed:', e.message);
+  }
 }
 
 async function syncIdCounters() {

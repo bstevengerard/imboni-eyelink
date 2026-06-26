@@ -190,9 +190,18 @@ const corsOrigins = (process.env.CORS_ORIGIN || "*")
   .split(",")
   .map((o) => o.trim());
 
+console.log(`[server] CORS origins:`, corsOrigins);
+console.log(`[server] MONGO_URI configured:`, !!process.env.MONGO_URI);
+
 const app = express();
 app.use(cors({ origin: corsOrigins }));
 app.use(express.json());
+
+// Health check (no auth required)
+app.get('/health', (req, res) => {
+  console.log('[health] Health check hit from:', req.ip);
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // CSP: prevent clickjacking / framing by other origins.
 app.use((req, res, next) => {
@@ -6312,6 +6321,7 @@ initDb()
       console.log(
         `[swagger] API documentation available at http://localhost:${PORT}/api-docs`,
       );
+      console.log(`[server] Health check: http://localhost:${PORT}/health`);
     });
   })
   .catch((err) => {
@@ -6336,5 +6346,6 @@ initDb()
       console.log(
         `[swagger] API documentation available at http://localhost:${PORT}/api-docs`,
       );
+      console.log(`[server] Health check: http://localhost:${PORT}/health`);
     });
   });
