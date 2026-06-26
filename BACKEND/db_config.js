@@ -484,5 +484,6 @@ module.exports = {
   TeamMember,
   Testimonial,
   JourneyMilestone,
+  ResearchArticle,
   WaitingRoom,
 };

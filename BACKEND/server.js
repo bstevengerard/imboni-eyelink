@@ -82,7 +82,10 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Multer configuration for file uploads
+/**
+ * Multer disk storage for file uploads
+ * Used by image uploads and PDF uploads.
+ */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadsDir);
@@ -142,7 +145,7 @@ async function getUnreadMessageCount(conversationId, currentUserId) {
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for images
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp|heic|heif/;
     const extname = allowedTypes.test(
@@ -156,6 +159,21 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error("Only image files are allowed!"));
+    }
+  },
+});
+
+// PDF upload (separate filter/limits)
+const uploadPdf = multer({
+  storage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit for PDFs
+  fileFilter: (req, file, cb) => {
+    const allowedExt = /\.pdf$/i.test(path.extname(file.originalname));
+    const allowedMime = file.mimetype === "application/pdf";
+    if (allowedExt || allowedMime) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF files are allowed!"));
     }
   },
 });
@@ -185,14 +203,13 @@ app.use((req, res, next) => {
 app.use("/uploads", express.static(uploadsDir));
 
 // ============== UPLOAD ENDPOINT ==============
+
 /**
  * @swagger
  * /api/upload:
  *   post:
  *     tags: [Upload]
- *     summary: Upload file
- *     security:
- *       - bearerAuth: []
+ *     summary: Upload image file (jpeg/png/gif/webp/heic/heif)
  *     requestBody:
  *       required: true
  *       content:
@@ -261,6 +278,60 @@ app.post(
   },
   (err, req, res, next) => {
     console.error("[upload] Upload error:", err.message);
+    res
+      .status(400)
+      .json({ success: false, message: err.message || "Upload failed" });
+  },
+);
+
+/**
+ * @swagger
+ * /api/upload/pdf:
+ *   post:
+ *     tags: [Upload]
+ *     summary: Upload PDF file
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: PDF uploaded
+ */
+app.post(
+  "/api/upload/pdf",
+  uploadPdf.single("file"),
+  async (req, res) => {
+    if (!req.file) {
+      console.error("[upload/pdf] No file uploaded");
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded" });
+    }
+
+    try {
+      const finalFilename = req.file.filename;
+      console.log("[upload/pdf] PDF uploaded successfully:", finalFilename);
+      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${finalFilename}`;
+      res.json({
+        success: true,
+        data: { url: fileUrl, filename: finalFilename },
+      });
+    } catch (error) {
+      console.error("[upload/pdf] Error processing file:", error.message);
+      res
+        .status(500)
+        .json({ success: false, message: "Error processing file" });
+    }
+  },
+  (err, req, res, next) => {
+    console.error("[upload/pdf] Upload error:", err.message);
     res
       .status(400)
       .json({ success: false, message: err.message || "Upload failed" });

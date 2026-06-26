@@ -44,6 +44,7 @@ type ResearchArticle = {
 
 export default function ResearchLibrary() {
   const [articles, setArticles] = useState<ResearchArticle[]>([]);
+  const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -90,6 +91,7 @@ export default function ResearchLibrary() {
   );
 
   const resetForm = () => {
+    setSelectedPdf(null);
     setFormData({
       title: "",
       authors: "",
@@ -112,6 +114,7 @@ export default function ResearchLibrary() {
 
   const openEditDialog = (article: ResearchArticle) => {
     setSelectedArticle(article);
+    setSelectedPdf(null); // keep existing PDF unless user selects a new one
     setFormData({
       title: article.title,
       authors: article.authors.join(", "),
@@ -136,6 +139,22 @@ export default function ResearchLibrary() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      let downloadUrlToSave: string | undefined;
+
+      if (selectedPdf) {
+        const fd = new FormData();
+        fd.append("file", selectedPdf);
+
+        const uploadRes = await api.upload("/api/upload/pdf", fd);
+        if (!uploadRes.success) {
+          throw new Error(uploadRes.message || "PDF upload failed");
+        }
+        if (!uploadRes.data?.url) {
+          throw new Error("PDF upload did not return a URL");
+        }
+        downloadUrlToSave = uploadRes.data.url;
+      }
+
       const res = await api.post("/api/admin/research", {
         title: formData.title,
         authors: formData.authors.split(",").map((a) => a.trim()).filter(Boolean),
@@ -143,19 +162,20 @@ export default function ResearchLibrary() {
         year: Number(formData.year),
         category: formData.category,
         abstract: formData.abstract || undefined,
-        download_url: formData.download_url || undefined,
+        download_url: downloadUrlToSave,
         external_url: formData.external_url || undefined,
         citations: Number(formData.citations) || 0,
         is_published: formData.is_published,
       });
+
       if (res.success) {
         toast.success("Article added successfully!");
         setShowAddDialog(false);
         resetForm();
         fetchArticles();
       }
-    } catch {
-      toast.error("Failed to add article");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to add article");
     } finally {
       setIsSubmitting(false);
     }
@@ -166,26 +186,47 @@ export default function ResearchLibrary() {
     if (!selectedArticle) return;
     setIsSubmitting(true);
     try {
-      const res = await api.patch(`/api/admin/research/${selectedArticle._id}`, {
+      let downloadUrlToSave: string | undefined;
+
+      // Only overwrite PDF URL when user selects a new PDF
+      if (selectedPdf) {
+        const fd = new FormData();
+        fd.append("file", selectedPdf);
+
+        const uploadRes = await api.upload("/api/upload/pdf", fd);
+        if (!uploadRes.success) {
+          throw new Error(uploadRes.message || "PDF upload failed");
+        }
+        if (!uploadRes.data?.url) {
+          throw new Error("PDF upload did not return a URL");
+        }
+        downloadUrlToSave = uploadRes.data.url;
+      }
+
+      const payload: any = {
         title: formData.title,
         authors: formData.authors.split(",").map((a) => a.trim()).filter(Boolean),
         journal: formData.journal || undefined,
         year: Number(formData.year),
         category: formData.category,
         abstract: formData.abstract || undefined,
-        download_url: formData.download_url || undefined,
         external_url: formData.external_url || undefined,
         citations: Number(formData.citations) || 0,
         is_published: formData.is_published,
-      });
+      };
+
+      // If no new file chosen, omit download_url to keep old PDF
+      if (downloadUrlToSave) payload.download_url = downloadUrlToSave;
+
+      const res = await api.patch(`/api/admin/research/${selectedArticle._id}`, payload);
       if (res.success) {
         toast.success("Article updated successfully!");
         setShowEditDialog(false);
         resetForm();
         fetchArticles();
       }
-    } catch {
-      toast.error("Failed to update article");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update article");
     } finally {
       setIsSubmitting(false);
     }
@@ -394,13 +435,21 @@ export default function ResearchLibrary() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="download_url">Download PDF URL</Label>
+                <Label htmlFor="download_pdf">Upload PDF</Label>
                 <Input
-                  id="download_url"
-                  value={formData.download_url}
-                  onChange={(e) => setFormData({ ...formData, download_url: e.target.value })}
-                  placeholder="https://..."
+                  id="download_pdf"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    setSelectedPdf(file);
+                  }}
                 />
+                <p className="text-xs text-muted-foreground">
+                  {showEditDialog
+                    ? "Choose a new PDF to replace the old one (leave empty to keep existing)."
+                    : "Select a PDF to be stored and shown on the public Research Library page."}
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="external_url">View Online URL</Label>
