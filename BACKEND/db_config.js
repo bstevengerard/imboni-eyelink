@@ -388,8 +388,53 @@ async function generateDoctorId() {
   throw new Error('Failed to generate doctor ID after retries');
 }
 
+async function ensureCollections() {
+  const db = mongoose.connection.db;
+  const modelNames = [
+    Hospital, User, ServiceType, Appointment, MedicalRecord, Prescription,
+    Notification, MobileClinic, ClinicSchedule, Conversation, Message,
+    Referral, DoctorRating, Setting, ContactMessage, TeamMember,
+    Testimonial, JourneyMilestone, ResearchArticle, WaitingRoom, IdCounter
+  ];
+  const existing = await db.listCollections().toArray();
+  const existingNames = new Set(existing.map((c) => c.name));
+  for (const model of modelNames) {
+    const name = model.collection.name;
+    if (!existingNames.has(name)) {
+      try {
+        await db.createCollection(name);
+        console.log(`[db] Created collection: ${name}`);
+      } catch (e) {
+        console.warn(`[db] Failed to create collection ${name}:`, e.message);
+      }
+    }
+  }
+}
+
+const SUPER_ADMIN_EMAIL = "admin@imbonieyelink.rw";
+const SUPER_ADMIN_PASSWORD = "imboniadmin@";
+const SUPER_ADMIN_NAME = "Super Admin";
+const SUPER_ADMIN_ROLE = "super_admin";
+
+async function ensureSuperAdmin() {
+  const exists = await User.findOne({ email: SUPER_ADMIN_EMAIL });
+  if (exists) return;
+  const bcrypt = require('bcrypt');
+  const hash = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
+  await User.create({
+    email: SUPER_ADMIN_EMAIL,
+    password_hash: hash,
+    name: SUPER_ADMIN_NAME,
+    role: SUPER_ADMIN_ROLE,
+    status: 'active',
+  });
+  console.log('[db] Super admin created');
+}
+
 async function initDb() {
   await connectDb();
+  await ensureCollections();
+  await ensureSuperAdmin();
   await syncIdCounters();
 }
 
