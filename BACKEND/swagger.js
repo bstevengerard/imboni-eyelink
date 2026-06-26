@@ -11,6 +11,7 @@ const options = {
     },
     servers: [
       { url: 'http://localhost:5000', description: 'Local server' },
+      { url: 'https://imboni-eyelink-backend.onrender.com', description: 'Production server' },
     ],
     components: {
       securitySchemes: {
