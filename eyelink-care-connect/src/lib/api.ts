@@ -2,7 +2,12 @@
  * API client - all requests go to backend. Token from localStorage.
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+/**
+ * VITE_API_URL is the ONLY source of truth for backend base URL.
+ * - If set: requests go to ${VITE_API_URL}
+ * - If not set: requests go to relative paths (works with Vite proxy in dev)
+ */
+const BASE_URL = import.meta.env.VITE_API_URL || "";
 
 function getToken(): string | null {
   return localStorage.getItem('token');
