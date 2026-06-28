@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api|_next|static|assets|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)",
