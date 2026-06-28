@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,12 +39,12 @@ const navigation = [
 ];
 
 export default function DoctorPortal() {
-  const { user, logout, refreshUser } = useAuth();
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
   if (!user) return null;
-  
+
   const currentPath = location.pathname;
   const activeNav = navigation.find(nav => nav.href === currentPath) || navigation[0];
 
@@ -56,10 +56,6 @@ export default function DoctorPortal() {
   const avatar = drName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   const userId = user.dr_id || user.id;
   const userEmail = user.email || '';
-
-  useEffect(() => {
-    refreshUser();
-  }, [refreshUser]);
 
   const renderComponent = () => {
     switch (activeNav.component) {

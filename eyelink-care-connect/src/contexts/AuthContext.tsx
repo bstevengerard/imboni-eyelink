@@ -106,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: false, message: e instanceof Error ? e.message : 'Login failed' };
       }
     },
-    [user]
+    []
   );
 
   const logout = useCallback(() => {
