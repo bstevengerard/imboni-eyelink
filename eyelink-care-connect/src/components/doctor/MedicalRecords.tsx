@@ -117,7 +117,7 @@ export default function DoctorRecords() {
   const [intraocularPressure, setIntraocularPressure] = useState({ right: '', left: '' });
 
   const [existingPrescriptionMedications, setExistingPrescriptionMedications] = useState<MedicationRow[]>([]);
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  
 
   const [prescriptionsLoading, setPrescriptionsLoading] = useState(false);
 
@@ -734,7 +734,7 @@ export default function DoctorRecords() {
                     onClick={async () => {
                       try {
                         const token = api.getToken();
-                        const url = `${apiBaseUrl}/api/doctor/records/${selectedRecord.id}/export`;
+                        const url = `${api.BASE_URL}/api/doctor/records/${selectedRecord.id}/export`;
                         const res = await fetch(url, {
                           method: 'GET',
                           headers: token ? { Authorization: `Bearer ${token}` } : undefined,

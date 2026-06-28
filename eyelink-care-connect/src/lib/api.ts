@@ -48,8 +48,9 @@ async function request<T>(
 }
 
 export const api = {
-  getToken,
-  setToken(token: string) {
+   BASE_URL,
+   getToken,
+   setToken(token: string) {
     localStorage.setItem('token', token);
   },
   clearToken() {

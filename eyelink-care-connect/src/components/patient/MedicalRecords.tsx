@@ -189,9 +189,12 @@ export default function PatientRecords() {
 
     try {
       const token = api.getToken();
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/patient/records/${id}/export`, {
+      const res = await fetch(`${api.BASE_URL || ''}/api/patient/records/${id}/export`, {
         method: 'GET',
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       const html = await res.text();
       if (!res.ok) throw new Error(html || 'Failed to download record');

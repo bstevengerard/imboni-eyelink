@@ -186,11 +186,18 @@ const SUPER_ADMIN_ROLE = "super_admin";
 
 const JWT_SECRET = process.env.JWT_SECRET || "imboni-eyelink-secret";
 const PORT = process.env.PORT || 5000;
-const corsOrigins = (process.env.CORS_ORIGIN || "*")
+
+// Dynamic CORS origins based on environment
+const FRONTEND_URL = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' 
+  ? 'https://imboni-eyelink.vercel.app' 
+  : 'http://localhost:8080');
+
+const corsOrigins = (process.env.CORS_ORIGIN || process.env.FRONTEND_URL_FOR_CORS || "*")
   .split(",")
   .map((o) => o.trim())
   .map((o) => {
     if (o.startsWith("CORS_ORIGIN=")) return o.slice("CORS_ORIGIN=".length);
+    if (o.startsWith("FRONTEND_URL_FOR_CORS=")) return o.slice("FRONTEND_URL_FOR_CORS=".length);
     return o;
   })
   .filter(Boolean);

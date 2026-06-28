@@ -155,7 +155,7 @@ export default function PatientPrescriptions() {
 
     try {
       const token = api.getToken();
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/patient/prescriptions/${id}/export`, {
+      const res = await fetch(`${api.BASE_URL}/api/patient/prescriptions/${id}/export`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const html = await res.text();
