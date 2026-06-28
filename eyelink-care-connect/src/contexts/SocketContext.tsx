@@ -50,7 +50,7 @@ type SocketContextType = {
 
 const SocketContext = createContext<SocketContextType | null>(null);
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://imboni-eyelink-backend.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://imboni-eyelink-backend-9ezl.onrender.com';
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();

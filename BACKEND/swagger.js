@@ -1,14 +1,6 @@
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
-const serverUrl = (process.env.FRONTEND_URL || '').includes('localhost')
-  ? 'http://localhost:5000'
-  : 'https://imboni-eyelink-backend.onrender.com';
-
-const serverDesc = (process.env.FRONTEND_URL || '').includes('localhost')
-  ? 'Local server'
-  : 'Production server';
-
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -18,7 +10,8 @@ const options = {
       description: 'API for IMBONI EyeLink eye care platform',
     },
     servers: [
-      { url: serverUrl, description: serverDesc },
+      { url: 'http://localhost:5000', description: 'Local server' },
+      { url: 'https://imboni-eyelink-backend-9ezl.onrender.com', description: 'Production server' },
     ],
     components: {
       securitySchemes: {

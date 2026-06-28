@@ -412,85 +412,13 @@ function normalizeMedicationValue(value) {
   return text && text.toLowerCase() !== "as directed" ? text : "N/A";
 }
 
-// Google Meet (Spaces API) helper
+// Google Meet helper - uses test room when set, otherwise returns Google Meet new room URL
 async function createGoogleMeetSpace() {
-  const keyfilePath =
-    process.env.GOOGLE_MEET_KEYFILE_PATH || "./credentials.json";
-
-  const clientEmail = process.env.GOOGLE_MEET_CLIENT_EMAIL;
-  const projectId = process.env.GOOGLE_MEET_PROJECT_ID;
-
-  if (process.env.GOOGLE_MEET_TEST_ROOM) {
-    return `https://meet.google.com/${process.env.GOOGLE_MEET_TEST_ROOM}`;
+  const testRoom = process.env.GOOGLE_MEET_TEST_ROOM;
+  if (testRoom) {
+    return `https://meet.google.com/${testRoom}`;
   }
-
-  if (
-    !projectId ||
-    !clientEmail ||
-    !clientEmail.includes(".iam.gserviceaccount.com")
-  ) {
-    return `https://meet.google.com/new`;
-  }
-
-  const SCOPES = ["https://www.googleapis.com/auth/meetings.space.created"];
-
-  try {
-    const { GoogleAuth } = require("google-auth-library");
-
-    const rawPrivateKey = process.env.GOOGLE_MEET_PRIVATE_KEY;
-    let auth;
-    if (rawPrivateKey) {
-      auth = new GoogleAuth({
-        credentials: {
-          type: "service_account",
-          project_id: projectId,
-          private_key_id: process.env.GOOGLE_MEET_PRIVATE_KEY_ID || "",
-          private_key: rawPrivateKey,
-          client_email: clientEmail,
-          client_id: process.env.GOOGLE_MEET_CLIENT_ID || "",
-          auth_uri: process.env.GOOGLE_MEET_AUTH_URI || "https://accounts.google.com/o/oauth2/auth",
-          token_uri: process.env.GOOGLE_MEET_TOKEN_URI || "https://oauth2.googleapis.com/token",
-          auth_provider_x509_cert_url: process.env.GOOGLE_MEET_AUTH_PROVIDER_X509_CERT_URL || "https://www.googleapis.com/oauth2/v1/certs",
-          client_x509_cert_url: process.env.GOOGLE_MEET_CLIENT_X509_CERT_URL || "",
-          universe_domain: process.env.GOOGLE_MEET_UNIVERSE_DOMAIN || "googleapis.com",
-        },
-        scopes: SCOPES,
-      });
-    } else if (!keyfilePath || !fs.existsSync(keyfilePath)) {
-      console.warn(
-        `[meetings] credentials file not found at ${keyfilePath}, skipping Meet creation`
-      );
-      return `https://meet.google.com/new`;
-    } else {
-      auth = new GoogleAuth({
-        keyFile: keyfilePath,
-        scopes: SCOPES,
-      });
-    }
-
-    const authClient = await auth.getClient();
-    const accessToken = await authClient.getAccessToken();
-    const token = accessToken.token || accessToken;
-
-    const response = await fetch(`https://meet.googleapis.com/v2/spaces`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-    }
-
-    const data = await response.json();
-    return data.meetingUri;
-  } catch (e) {
-    console.error("[meetings] Google Meet API failed:", e.message);
-    return `https://meet.google.com/new`;
-  }
+  return `https://meet.google.com/new`;
 }
 
 // ============== AUTH ROUTES ==============

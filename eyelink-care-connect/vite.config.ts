@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Proxy to production backend, or override with VITE_API_URL from .env
-  const PROXY_TARGET = process.env.VITE_API_URL || "https://imboni-eyelink-backend.onrender.com";
+  const PROXY_TARGET = process.env.VITE_API_URL || "https://imboni-eyelink-backend-9ezl.onrender.com";
 
   return {
     server: {
