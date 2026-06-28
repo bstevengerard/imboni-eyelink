@@ -7,7 +7,7 @@
  * - If set: requests go to ${VITE_API_URL}
  * - If not set: requests go to relative paths (works with Vite proxy in dev)
  */
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+const BASE_URL = import.meta.env.VITE_API_URL || "https://imboni-eyelink-backend-9ezl.onrender.com";
 
 function getToken(): string | null {
   return localStorage.getItem('token');
