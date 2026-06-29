@@ -251,14 +251,14 @@ export default function AboutPage() {
                {team.map((member) => (
 <div
                     key={member._id}
-                    className="group rounded-xl overflow-hidden bg-card border border-border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                    className="group card-elevated overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
                       {member.photo_url ? (
                         <img
                           src={member.photo_url}
                           alt={member.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -267,6 +267,12 @@ export default function AboutPage() {
                           </div>
                         </div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                        <p className="text-white text-sm font-medium">
+                          {member.bio || "Dedicated to transforming eye care through innovation and compassion."}
+                        </p>
+                      </div>
                     </div>
                     <div className="p-4 bg-card">
                       <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{member.name}</h3>
