@@ -27,6 +27,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 type Testimonial = {
   _id: string;
   id?: string;
@@ -140,7 +149,7 @@ export default function SuccessStories() {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -160,7 +169,12 @@ export default function SuccessStories() {
     }
 
     setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    try {
+      const base64 = await fileToBase64(file);
+      setPreviewUrl(base64);
+    } catch {
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const removePhoto = () => {
@@ -171,20 +185,11 @@ export default function SuccessStories() {
   };
 
   const uploadFile = async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    setUploading(true);
-
     try {
-      const res = await api.upload("/api/upload", formData);
-      if (res.success && res.data?.url) {
-        return res.data.url;
-      }
-      return null;
+      const base64 = await fileToBase64(file);
+      return base64;
     } catch {
       return null;
-    } finally {
-      setUploading(false);
     }
   };
 

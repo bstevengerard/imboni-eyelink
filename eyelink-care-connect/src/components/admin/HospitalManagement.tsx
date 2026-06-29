@@ -9,6 +9,15 @@ import { api } from "@/lib/api";
 import { Plus, Edit, Trash2, Star, Building2, MapPin, Upload, X, ImageIcon, Globe, Heart, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 type Hospital = {
   _id: string;
   name: string;
@@ -79,20 +88,21 @@ export default function HospitalManagement() {
     fetchHospitals();
   }, []);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      try {
+        const base64 = await fileToBase64(file);
+        setPreviewUrl(base64);
+      } catch {
+        setPreviewUrl(URL.createObjectURL(file));
+      }
     }
   };
 
   const removeSelectedFile = () => {
     setSelectedFile(null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
     setPreviewUrl(null);
     setFormData({ ...formData, photo_url: "" });
     if (fileInputRef.current) {
@@ -147,15 +157,8 @@ export default function HospitalManagement() {
     try {
       let photoUrl = formData.photo_url;
       
-      // Upload file if selected
       if (selectedFile) {
-        const uploadData = new FormData();
-        uploadData.append('file', selectedFile);
-        
-        const uploadRes = await api.upload('/api/upload', uploadData);
-        if (uploadRes.success && uploadRes.data?.url) {
-          photoUrl = uploadRes.data.url;
-        }
+        photoUrl = await fileToBase64(selectedFile);
       }
       
       const data = {

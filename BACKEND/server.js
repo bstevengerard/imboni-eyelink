@@ -2287,7 +2287,7 @@ app.post(
         title: typeof body.title === "string" ? body.title.trim() : undefined,
         description: typeof body.description === "string" ? body.description.trim() : undefined,
         icon: typeof body.icon === "string" ? body.icon.trim() : "BookOpen",
-        articles: Array.isArray(body.articles) ? body.articles.filter((a: any) => typeof a === "string" && a.trim()) : [],
+        articles: Array.isArray(body.articles) ? body.articles.filter((a) => typeof a === "string" && a.trim()) : [],
         myth_text: typeof body.myth_text === "string" ? body.myth_text.trim() : undefined,
         fact_text: typeof body.fact_text === "string" ? body.fact_text.trim() : undefined,
         symptom_text: typeof body.symptom_text === "string" ? body.symptom_text.trim() : undefined,
@@ -2314,7 +2314,7 @@ app.patch(
     if (typeof body.title === "string") update.title = body.title.trim();
     if (typeof body.description === "string") update.description = body.description.trim();
     if (typeof body.icon === "string") update.icon = body.icon.trim();
-    if (Array.isArray(body.articles)) update.articles = body.articles.filter((a: any) => typeof a === "string" && a.trim());
+    if (Array.isArray(body.articles)) update.articles = body.articles.filter((a) => typeof a === "string" && a.trim());
     if (typeof body.myth_text === "string") update.myth_text = body.myth_text.trim();
     if (typeof body.fact_text === "string") update.fact_text = body.fact_text.trim();
     if (typeof body.symptom_text === "string") update.symptom_text = body.symptom_text.trim();

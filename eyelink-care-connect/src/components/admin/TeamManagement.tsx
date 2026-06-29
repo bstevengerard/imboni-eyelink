@@ -9,6 +9,15 @@ import { api } from "@/lib/api";
 import { Plus, Edit, Trash2, X, User, Upload, Loader2, Users as UsersIcon, Award, Briefcase, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 type TeamMember = {
   _id: string;
   name: string;
@@ -89,10 +98,9 @@ export default function TeamManagement() {
     setDialogOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type (including HEIC/HEIF which may not have standard MIME types)
       const validTypes = ['image/', '.heic', '.heif'];
       const fileName = file.name.toLowerCase();
       const isValidType = validTypes.some(type => 
@@ -102,13 +110,17 @@ export default function TeamManagement() {
         toast({ title: "Error", description: "Please select an image file", variant: "destructive" });
         return;
       }
-      // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         toast({ title: "Error", description: "Image size must be less than 5MB", variant: "destructive" });
         return;
       }
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      try {
+        const base64 = await fileToBase64(file);
+        setPreviewUrl(base64);
+      } catch {
+        setPreviewUrl(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -122,21 +134,13 @@ export default function TeamManagement() {
   };
 
   const uploadFile = async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    console.log('[TeamManagement] Starting upload for:', file.name, 'size:', file.size);
-    
     try {
-      const res = await api.upload('/api/upload', formData);
-      console.log('[TeamManagement] Upload response:', res);
-      if (res.success && res.data?.url) {
-        return res.data.url;
-      }
-      console.error('[TeamManagement] Upload failed:', res.message);
-      return null;
+      console.log('[TeamManagement] Converting to Base64:', file.name, 'size:', file.size);
+      const base64 = await fileToBase64(file);
+      console.log('[TeamManagement] Base64 conversion complete, length:', base64.length);
+      return base64;
     } catch (error) {
-      console.error('[TeamManagement] Upload error:', error);
+      console.error('[TeamManagement] Base64 conversion error:', error);
       return null;
     }
   };

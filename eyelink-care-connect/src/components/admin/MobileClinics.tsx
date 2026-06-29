@@ -10,6 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 type ClinicRow = {
   _id: string;
   name: string;
@@ -104,7 +113,7 @@ export default function MobileClinics() {
     clinic.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleClinicFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClinicFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
@@ -116,7 +125,12 @@ export default function MobileClinics() {
         return;
       }
       setClinicFile(file);
-      setClinicPreview(URL.createObjectURL(file));
+      try {
+        const base64 = await fileToBase64(file);
+        setClinicPreview(base64);
+      } catch {
+        setClinicPreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -127,12 +141,9 @@ export default function MobileClinics() {
   };
 
   const uploadClinicFile = async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append('file', file);
     try {
-      const res = await api.upload('/api/upload', formData);
-      if (res.success && res.data?.url) return res.data.url;
-      return null;
+      const base64 = await fileToBase64(file);
+      return base64;
     } catch {
       return null;
     }

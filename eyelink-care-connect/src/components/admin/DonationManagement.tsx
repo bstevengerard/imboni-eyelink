@@ -11,6 +11,15 @@ import { api } from "@/lib/api";
 import { Heart, Plus, Edit, Trash2, Save, ImageIcon, Upload, Loader2, Settings as SettingsIcon, FileText, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 type DonationSettings = {
   mtn_number: string;
   airtel_number: string;
@@ -120,7 +129,7 @@ export default function DonationManagement() {
     setPostDialogOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -128,17 +137,19 @@ export default function DonationManagement() {
         return;
       }
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      try {
+        const base64 = await fileToBase64(file);
+        setPreviewUrl(base64);
+      } catch {
+        setPreviewUrl(URL.createObjectURL(file));
+      }
     }
   };
 
   const uploadFile = async (file: File): Promise<string | null> => {
     try {
-      const formDataObj = new FormData();
-      formDataObj.append("file", file);
-      const res = await api.upload("/api/upload", formDataObj);
-      if (res.success && res.data?.url) return res.data.url;
-      return null;
+      const base64 = await fileToBase64(file);
+      return base64;
     } catch {
       return null;
     }
