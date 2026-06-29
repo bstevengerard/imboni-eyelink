@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DialogDescription } from "@/components/ui/dialog";
-import { Copy, Check, Phone, Image as ImageIcon, Loader2, Heart, Shield, Gift, TrendingUp } from "lucide-react";
+import { Copy, Check, Phone, Image as ImageIcon, Loader2, Heart, Shield, Gift, TrendingUp, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/61514.jpg";
 import logo from "@/assets/logo.png";
 
@@ -102,6 +103,14 @@ export default function DonatePage() {
       </div>
 
       <div className="container relative z-10 mx-auto px-4 max-w-5xl">
+        {/* Back to Home */}
+        <div className="mb-6">
+          <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm font-medium">Back to Home</span>
+          </Link>
+        </div>
+
         {/* Hero Section */}
         <div className="text-center mb-10 sm:mb-14">
           <div className="inline-flex items-center justify-center mb-6 sm:mb-8">
