@@ -143,19 +143,22 @@ export default function EducationPage() {
                     )}
                     {topic.articles && topic.articles.length > 0 && (
                       <ul className="space-y-2">
-                        {topic.articles.map((article) => {
-                          const isUrl = article.startsWith('http://') || article.startsWith('https://');
+                        {topic.articles.map((article, idx) => {
+                          const parts = article.split('|').map(p => p.trim());
+                          const name = parts[0] || article;
+                          const url = parts[1] || '';
+                          const isUrl = url.startsWith('http://') || url.startsWith('https://');
                           return (
-                            <li key={article} className="flex items-center gap-2 text-sm">
+                            <li key={idx} className="flex items-center gap-2 text-sm">
                               <FileText className="w-4 h-4 text-accent" />
                               {isUrl ? (
                                 <a 
-                                  href={article} 
+                                  href={url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="text-accent hover:underline truncate"
                                 >
-                                  {new URL(article).pathname.split('/').pop() || article}
+                                  {name}
                                 </a>
                               ) : (
                                 <span className="truncate">{article}</span>

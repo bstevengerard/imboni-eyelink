@@ -471,20 +471,20 @@ export default function EducationManagement() {
                     id="description"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Brief description of this topic..."
+placeholder="Brief description of this topic..."
                     rows={2}
                   />
                 </div>
-<div className="md:col-span-2">
-                   <Label htmlFor="articles">Article URLs (one per line)</Label>
-                   <Textarea
-                     id="articles"
-                     value={formData.articles}
-                     onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
-                     placeholder="https://example.com/catatcts&#10;https://example.com/glaucoma&#10;https://example.com/retinopathy"
-                     rows={4}
-                   />
-                 </div>
+                <div className="md:col-span-2">
+                  <Label htmlFor="articles">Articles (Name | URL per line)</Label>
+                  <Textarea
+                    id="articles"
+                    value={formData.articles}
+                    onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
+                    placeholder="Understanding Cataracts|https://...&#10;Diabetic Retinopathy|https://..."
+                    rows={4}
+                  />
+                </div>
               </>
             )}
             {formData.content_type === "myth" && (
@@ -619,29 +619,29 @@ export default function EducationManagement() {
                     id="description"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={2}
+rows={2}
                   />
                 </div>
-<div className="md:col-span-2">
-                   <Label htmlFor="articles">Article URLs (one per line)</Label>
-                   <Textarea
-                     id="articles"
-                     value={formData.articles}
-                     onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
-                     rows={4}
-                   />
-                 </div>
-               </>
-             )}
-             {formData.content_type === "myth" && (
-               <>
-                 <div className="md:col-span-2">
-                   <Label htmlFor="myth_text">Myth Statement *</Label>
-                   <Textarea
-                     id="myth_text"
-                     value={formData.myth_text}
-                     onChange={(e) => setFormData({ ...formData, myth_text: e.target.value })}
-                     rows={2}
+                <div className="md:col-span-2">
+                  <Label htmlFor="articles">Articles (Name | URL per line)</Label>
+                  <Textarea
+                    id="articles"
+                    value={formData.articles}
+                    onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+              </>
+            )}
+            {formData.content_type === "myth" && (
+              <>
+                <div className="md:col-span-2">
+                  <Label htmlFor="myth_text">Myth Statement *</Label>
+                  <Textarea
+                    id="myth_text"
+                    value={formData.myth_text}
+                    onChange={(e) => setFormData({ ...formData, myth_text: e.target.value })}
+                    rows={2}
                      required
                    />
                  </div>
