@@ -44,6 +44,7 @@ const hospitalSchema = new mongoose.Schema({
 
 hospitalSchema.index({ name: 1 });
 hospitalSchema.index({ featured: 1, name: 1 });
+const Hospital = mongoose.model('Hospital', hospitalSchema);
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -75,6 +76,7 @@ const userSchema = new mongoose.Schema({
     sunday: String,
   },
 }, { timestamps: true });
+const User = mongoose.model('User', userSchema);
 
 const serviceTypeSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -84,6 +86,7 @@ const serviceTypeSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 serviceTypeSchema.index({ name: 1 });
+const ServiceType = mongoose.model('ServiceType', serviceTypeSchema);
 
 const appointmentSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -97,6 +100,7 @@ const appointmentSchema = new mongoose.Schema({
   meeting_uri: String,
   notes: String,
 }, { timestamps: true });
+const Appointment = mongoose.model('Appointment', appointmentSchema);
 
 const medicalRecordSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -129,6 +133,7 @@ const medicalRecordSchema = new mongoose.Schema({
     filename: String,
   }],
 }, { timestamps: true });
+const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);
 
 const prescriptionSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -137,6 +142,7 @@ const prescriptionSchema = new mongoose.Schema({
   content: { type: String, required: true },
   status: { type: String, enum: ['active', 'refilled', 'expired'], default: 'active' },
 }, { timestamps: true });
+const Prescription = mongoose.model('Prescription', prescriptionSchema);
 
 const notificationSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -145,6 +151,7 @@ const notificationSchema = new mongoose.Schema({
   type: { type: String, enum: ['info', 'success', 'warning', 'error'], default: 'info' },
   read: { type: Boolean, default: false },
 }, { timestamps: true });
+const Notification = mongoose.model('Notification', notificationSchema);
 
 const mobileClinicSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -155,6 +162,7 @@ const mobileClinicSchema = new mongoose.Schema({
   next_visit: Date,
   photo_url: String,
 }, { timestamps: true });
+const MobileClinic = mongoose.model('MobileClinic', mobileClinicSchema);
 
 const clinicScheduleSchema = new mongoose.Schema({
   clinic_id: { type: mongoose.Schema.Types.ObjectId, ref: 'MobileClinic', required: true },
@@ -166,6 +174,7 @@ const clinicScheduleSchema = new mongoose.Schema({
 
 mobileClinicSchema.index({ status: 1, name: 1 });
 clinicScheduleSchema.index({ clinic_id: 1, schedule_date: 1 });
+const ClinicSchedule = mongoose.model('ClinicSchedule', clinicScheduleSchema);
 
 const conversationSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -173,6 +182,8 @@ const conversationSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 conversationSchema.index({ patient_id: 1, doctor_id: 1 }, { unique: true });
+
+const Conversation = mongoose.model('Conversation', conversationSchema);
 
 const messageSchema = new mongoose.Schema({
   conversation_id: {
@@ -232,7 +243,7 @@ messageSchema.virtual('text').get(function() {
 // Transform for JSON serialization
 messageSchema.set('toJSON', { virtuals: true });
 messageSchema.set('toObject', { virtuals: true });
-
+const Message = mongoose.model('Message', messageSchema);
 
 const referralSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -251,11 +262,14 @@ const doctorRatingSchema = new mongoose.Schema({
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: String,
 }, { timestamps: true });
+const Referral = mongoose.model('Referral', referralSchema);
+const DoctorRating = mongoose.model('DoctorRating', doctorRatingSchema);
 
 const settingSchema = new mongoose.Schema({
   key: { type: String, required: true, unique: true },
   value: Object,
 }, { timestamps: true });
+const Setting = mongoose.model('Setting', settingSchema);
 
 const contactMessageSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -268,6 +282,7 @@ const contactMessageSchema = new mongoose.Schema({
   responded_by: String,
   response_notes: String,
 }, { timestamps: true });
+const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);
 
 const teamMemberSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -277,6 +292,7 @@ const teamMemberSchema = new mongoose.Schema({
   photo_url: String,
   order: { type: Number, default: 0 },
 }, { timestamps: true });
+const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
 
 const waitingRoomSchema = new mongoose.Schema({
   doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -295,6 +311,7 @@ const testimonialSchema = new mongoose.Schema({
   is_published: { type: Boolean, default: true },
   order: { type: Number, default: 0 },
 }, { timestamps: true });
+const Testimonial = mongoose.model('Testimonial', testimonialSchema);
 
 const journeyMilestoneSchema = new mongoose.Schema({
   year: { type: String, required: true },
@@ -302,6 +319,7 @@ const journeyMilestoneSchema = new mongoose.Schema({
   is_published: { type: Boolean, default: true },
   order: { type: Number, default: 0 },
 }, { timestamps: true });
+const JourneyMilestone = mongoose.model('JourneyMilestone', journeyMilestoneSchema);
 
 const researchArticleSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -315,6 +333,7 @@ const researchArticleSchema = new mongoose.Schema({
   citations: { type: Number, default: 0 },
   is_published: { type: Boolean, default: true },
 }, { timestamps: true });
+const ResearchArticle = mongoose.model('ResearchArticle', researchArticleSchema);
 
 researchArticleSchema.index({ category: 1, createdAt: -1 });
 teamMemberSchema.index({ order: 1, createdAt: -1 });
