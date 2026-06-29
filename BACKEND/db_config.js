@@ -323,27 +323,6 @@ journeyMilestoneSchema.index({ is_published: 1, order: 1, createdAt: -1 });
 
 const WaitingRoom = mongoose.model('WaitingRoom', waitingRoomSchema);
 
-// Models
-const Hospital = mongoose.model('Hospital', hospitalSchema);
-const User = mongoose.model('User', userSchema);
-const ServiceType = mongoose.model('ServiceType', serviceTypeSchema);
-const Appointment = mongoose.model('Appointment', appointmentSchema);
-const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);
-const Prescription = mongoose.model('Prescription', prescriptionSchema);
-const Notification = mongoose.model('Notification', notificationSchema);
-const MobileClinic = mongoose.model('MobileClinic', mobileClinicSchema);
-const ClinicSchedule = mongoose.model('ClinicSchedule', clinicScheduleSchema);
-const Conversation = mongoose.model('Conversation', conversationSchema);
-const Message = mongoose.model('Message', messageSchema);
-const Referral = mongoose.model('Referral', referralSchema);
-const DoctorRating = mongoose.model('DoctorRating', doctorRatingSchema);
-const Setting = mongoose.model('Setting', settingSchema);
-const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);
-const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
-const Testimonial = mongoose.model('Testimonial', testimonialSchema);
-const JourneyMilestone = mongoose.model('JourneyMilestone', journeyMilestoneSchema);
-const ResearchArticle = mongoose.model('ResearchArticle', researchArticleSchema);
-
 // Generate patient ID like 2025IBN001 – atomic counter, no hard limit
 async function generatePatientId() {
   const year = new Date().getFullYear();
@@ -400,7 +379,9 @@ async function ensureCollections() {
     Hospital, User, ServiceType, Appointment, MedicalRecord, Prescription,
     Notification, MobileClinic, ClinicSchedule, Conversation, Message,
     Referral, DoctorRating, Setting, ContactMessage, TeamMember,
-    Testimonial, JourneyMilestone, ResearchArticle, WaitingRoom, IdCounter
+    Testimonial, JourneyMilestone, ResearchArticle, WaitingRoom,
+    DonationSettings, DonationPost, Donation,
+    IdCounter
   ];
   const existing = await db.listCollections().toArray();
   const existingNames = new Set(existing.map((c) => c.name));
@@ -433,10 +414,23 @@ async function syncIdCounters() {
 
   try {
     const db = mongoose.connection.db;
-    await db.collection('users').dropIndex('pt_id_1').catch(() => {});
-    await db.collection('users').dropIndex('dr_id_1').catch(() => {});
-    await db.collection('users').createIndex({ pt_id: 1 }, { unique: true, partialFilterExpression: { pt_id: { $type: 'string' } } });
-    await db.collection('users').createIndex({ dr_id: 1 }, { unique: true, partialFilterExpression: { dr_id: { $type: 'string' } } });
+    const dropPt = db.collection('users').dropIndex('pt_id_1').catch((e) => e);
+    const dropDr = db.collection('users').dropIndex('dr_id_1').catch((e) => e);
+    await Promise.all([dropPt, dropDr]);
+    const dropResults = [dropPt, dropDr];
+    dropResults.forEach((err, i) => {
+      if (err && err.codeName !== 'IndexNotFound') {
+        console.warn(`[id_counters] Failed to drop ${i === 0 ? 'pt_id_1' : 'dr_id_1'}:`, err.message);
+      }
+    });
+    await db.collection('users').createIndex(
+      { pt_id: 1 },
+      { unique: true, partialFilterExpression: { pt_id: { $type: 'string' } }, name: 'pt_id_partial_v1' },
+    );
+    await db.collection('users').createIndex(
+      { dr_id: 1 },
+      { unique: true, partialFilterExpression: { dr_id: { $type: 'string' } }, name: 'dr_id_partial_v1' },
+    );
     await User.updateMany(
       { $or: [{ role: { $nin: ['patient'] }, pt_id: { $exists: true } }, { role: { $nin: ['doctor', 'optometrist'] }, dr_id: { $exists: true } }] },
       { $unset: { pt_id: '', dr_id: '' } }
@@ -497,6 +491,42 @@ async function syncIdCounters() {
   console.log('[id_counters] synced');
 }
 
+const donationSettingsSchema = new mongoose.Schema({
+  mtn_number: { type: String, default: "" },
+  airtel_number: { type: String, default: "" },
+  headline: { type: String, default: "Support our eye care mission" },
+  description: { type: String, default: "" },
+  // Optional admin labels (ex: { "10":"10 USD", "25":"25 USD" })
+  amount_labels: { type: Object, default: {} },
+}, { timestamps: true });
+
+const donationPostSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String, default: "" },
+  image_urls: { type: [String], default: [] },
+  is_published: { type: Boolean, default: true },
+  order: { type: Number, default: 0 },
+}, { timestamps: true });
+
+const donationSchema = new mongoose.Schema({
+  donor_name: { type: String, required: true },
+  donor_phone: { type: String, default: "" },
+  donor_email: { type: String, default: "" }, // optional; not used for verification
+  provider: { type: String, enum: ["mtn", "airtel"], required: true },
+  amount_value: { type: Number, required: true },
+  amount_currency: { type: String, default: "USD" },
+  ussd_reference: { type: String, required: true }, // free text confirmation code/reference
+  status: { type: String, enum: ["submitted", "reviewed", "rejected"], default: "submitted" },
+}, { timestamps: true });
+
+donationSettingsSchema.index({ createdAt: -1 });
+donationPostSchema.index({ is_published: 1, order: 1, createdAt: -1 });
+donationSchema.index({ provider: 1, createdAt: -1 });
+
+const DonationSettings = mongoose.model("DonationSettings", donationSettingsSchema);
+const DonationPost = mongoose.model("DonationPost", donationPostSchema);
+const Donation = mongoose.model("Donation", donationSchema);
+
 module.exports = {
   initDb,
   generatePatientId,
@@ -521,4 +551,7 @@ module.exports = {
   JourneyMilestone,
   ResearchArticle,
   WaitingRoom,
+  DonationSettings,
+  DonationPost,
+  Donation,
 };

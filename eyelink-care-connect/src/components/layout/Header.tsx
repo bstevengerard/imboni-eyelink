@@ -19,6 +19,7 @@ export default function Header() {
     },
     { name: 'Hospitals', href: '/hospitals' },
     { name: 'Contact', href: '/contact' },
+    { name: 'Donate', href: '/donate' },
   ];
 
   return (
@@ -103,31 +104,32 @@ export default function Header() {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="lg:hidden py-4 border-t border-border animate-slide-up">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2 px-1">
               {navigation.map((item) => (
-                <div key={item.href}>
+                <div key={item.href} className="px-2">
                   <Link
                     to={item.href}
-                    className={`px-4 py-3 rounded-lg font-medium transition-colors ${
+                    className={`w-full block px-4 py-3 rounded-xl font-medium transition-colors border border-border/80 bg-card backdrop-blur-sm ${
                       location.pathname === item.href
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-muted'
-                    }`}
+                        ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
+                        : 'hover:bg-primary/10 hover:border-primary/40 hover:text-foreground'
+                    } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.name}
                   </Link>
+
                   {item.children && (
-                    <div className="ml-4 pl-4 border-l-2 border-border/60 space-y-1">
+                    <div className="mt-2 ml-3 pl-3 border-l border-border/60 space-y-1">
                       {item.children.map((child) => (
                         <Link
                           key={child.href}
                           to={child.href}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors border border-border/80 bg-card ${
                             location.pathname === child.href
-                              ? 'bg-primary/10 text-primary font-medium'
-                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                          }`}
+                              ? 'bg-primary/10 text-primary font-medium border-primary/40'
+                              : 'text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/40'
+                          } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <BookOpen className="h-3.5 w-3.5 shrink-0" />
@@ -139,13 +141,15 @@ export default function Header() {
                 </div>
               ))}
 
-              <div className="h-px bg-border my-2" />
+              <div className="h-px bg-border my-2 mx-2" />
+
               <div className="px-4 py-2">
                 <GoogleTranslate />
               </div>
+
               <Link
                 to="/register"
-                className="px-4 py-3 rounded-lg font-medium bg-primary text-primary-foreground"
+                className="mx-2 px-4 py-3 rounded-xl font-medium bg-primary text-primary-foreground inline-flex items-center justify-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Get Started

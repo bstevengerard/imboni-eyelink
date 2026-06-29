@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Calendar, Truck, Building2,
   BarChart3, Settings, LogOut, Menu, Shield, Users as UsersIcon,
   Stethoscope, TrendingUp, Activity, Eye, HeartPulse, ArrowRight,
-  Clock, UserCheck, Sparkles, Star, Flag, Mail, BookOpen
+  Clock, UserCheck, Sparkles, Star, Flag, Mail, BookOpen, Heart
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -24,6 +24,7 @@ import JourneyMilestones from "@/components/admin/JourneyMilestones";
 import AdminAppointments from "@/components/admin/Appointments";
 import ContactMessages from "@/components/admin/ContactMessages";
 import ResearchLibrary from "@/components/admin/ResearchLibrary";
+import DonationManagement from "@/components/admin/DonationManagement";
 import { useLiveEvents } from "@/hooks/useLiveEvents";
 import LiveActivityFeed from "@/components/dashboard/LiveActivityFeed";
 
@@ -39,6 +40,7 @@ const navigation = [
   { name: 'Contact Messages', icon: Mail, href: '/admin/contact-messages', component: 'contactMessages' },
   { name: 'Mobile Clinics', icon: Truck, href: '/admin/clinics', component: 'clinics' },
   { name: 'Hospitals', icon: Building2, href: '/admin/hospitals', component: 'hospitals' },
+  { name: 'Donation Management', icon: Heart, href: '/admin/donations', component: 'donations' },
   { name: 'Analytics', icon: BarChart3, href: '/admin/analytics', component: 'analytics' },
   { name: 'Settings', icon: Settings, href: '/admin/settings', component: 'settings' },
 ];
@@ -314,6 +316,7 @@ export default function AdminPortal() {
           {activeNav.component === 'journey' && <JourneyMilestones />}
           {activeNav.component === 'research' && <ResearchLibrary />}
           {activeNav.component === 'hospitals' && <HospitalManagement />}
+          {activeNav.component === 'donations' && <DonationManagement />}
           {activeNav.component === 'clinics' && <MobileClinics />}
           {activeNav.component === 'analytics' && <Analytics />}
           {activeNav.component === 'settings' && <AdminSettings />}

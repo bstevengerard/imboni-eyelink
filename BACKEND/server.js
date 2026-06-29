@@ -36,6 +36,8 @@ const {
   JourneyMilestone,
   ResearchArticle,
   WaitingRoom,
+  DonationSettings,
+  DonationPost,
 } = require("./db_config");
 const { setupSwagger } = require("./swagger");
 
@@ -748,7 +750,254 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// ============== PUBLIC ROUTES ==============
+ // ============== PUBLIC ROUTES ==============
+
+// Donation public endpoints
+app.get("/api/donations/settings", async (req, res) => {
+  try {
+    const row = await DonationSettings.findOne({}).sort({ createdAt: -1 }).lean();
+    res.json({
+      success: true,
+      data: {
+        mtn_number: row?.mtn_number || "",
+        airtel_number: row?.airtel_number || "",
+        headline: row?.headline || "Support our eye care mission",
+        description: row?.description || "",
+        amount_labels: row?.amount_labels || {},
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+app.get("/api/donations/posts", async (req, res) => {
+  try {
+    const rows = await DonationPost.find({ is_published: true })
+      .sort({ order: 1, createdAt: -1 })
+      .lean();
+
+    const data = rows.map((r) => ({
+      _id: r._id,
+      title: r.title,
+      content: r.content || "",
+      image_urls: r.image_urls || [],
+      is_published: r.is_published === true,
+      order: r.order ?? 0,
+      createdAt: r.createdAt,
+    }));
+
+    res.json({ success: true, data });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Donation public create endpoint
+app.post("/api/donations", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const provider = typeof body.provider === "string" ? body.provider : "";
+    const amountValue = Number(body.amount_value ?? 0);
+    const ussdReference = typeof body.ussd_reference === "string" ? body.ussd_reference.trim() : "";
+    const donorName = typeof body.donorName === "string" ? body.donorName.trim() : "Anonymous";
+    const donorEmail = typeof body.donorEmail === "string" ? body.donorEmail.trim() : "";
+
+    if (!provider || (provider !== "mtn" && provider !== "airtel")) {
+      return res.status(400).json({ success: false, message: "Invalid provider" });
+    }
+    if (!amountValue || amountValue <= 0) {
+      return res.status(400).json({ success: false, message: "Invalid amount" });
+    }
+    if (!ussdReference) {
+      return res.status(400).json({ success: false, message: "USSD reference is required" });
+    }
+
+    const donation = await Donation.create({
+      donor_name: donorName,
+      donor_email: donorEmail,
+      provider,
+      amount_value: amountValue,
+      amount_currency: "USD",
+      ussd_reference: ussdReference,
+      status: "submitted",
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        _id: donation._id,
+        donor_name: donation.donor_name,
+        provider: donation.provider,
+        amount_value: donation.amount_value,
+        ussd_reference: donation.ussd_reference,
+        status: donation.status,
+        createdAt: donation.createdAt,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// ============== ADMIN DONATION ENDPOINTS ==============
+
+// Get admin donation settings
+app.get("/api/admin/donations/settings", authMiddleware, requireRole("super_admin", "admin"), async (req, res) => {
+  try {
+    const row = await DonationSettings.findOne({}).sort({ createdAt: -1 }).lean();
+    res.json({
+      success: true,
+      data: {
+        mtn_number: row?.mtn_number || "",
+        airtel_number: row?.airtel_number || "",
+        headline: row?.headline || "Support our eye care mission",
+        description: row?.description || "",
+        amount_labels: row?.amount_labels || {},
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Update admin donation settings
+app.put("/api/admin/donations/settings", authMiddleware, requireRole("super_admin", "admin"), async (req, res) => {
+  try {
+    const body = req.body || {};
+    const updates = {};
+    if (typeof body.mtn_number === "string") updates.mtn_number = body.mtn_number;
+    if (typeof body.airtel_number === "string") updates.airtel_number = body.airtel_number;
+    if (typeof body.headline === "string") updates.headline = body.headline;
+    if (typeof body.description === "string") updates.description = body.description;
+    if (body.amount_labels && typeof body.amount_labels === "object") updates.amount_labels = body.amount_labels;
+
+    const settings = await DonationSettings.findOneAndUpdate(
+      {},
+      { $set: updates },
+      { new: true, upsert: true }
+    ).lean();
+
+    res.json({
+      success: true,
+      data: {
+        mtn_number: settings.mtn_number || "",
+        airtel_number: settings.airtel_number || "",
+        headline: settings.headline || "Support our eye care mission",
+        description: settings.description || "",
+        amount_labels: settings.amount_labels || {},
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Admin: list all donation posts
+app.get("/api/admin/donations/posts", authMiddleware, requireRole("super_admin", "admin"), async (req, res) => {
+  try {
+    const rows = await DonationPost.find({}).sort({ order: 1, createdAt: -1 }).lean();
+    const data = rows.map((r) => ({
+      _id: r._id,
+      title: r.title,
+      content: r.content || "",
+      image_urls: r.image_urls || [],
+      is_published: r.is_published === true,
+      order: r.order ?? 0,
+      createdAt: r.createdAt,
+    }));
+    res.json({ success: true, data });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Admin: create donation post
+app.post("/api/admin/donations/posts", authMiddleware, requireRole("super_admin", "admin"), async (req, res) => {
+  try {
+    const body = req.body || {};
+    const title = typeof body.title === "string" ? body.title.trim() : "";
+    const content = typeof body.content === "string" ? body.content : "";
+    const image_urls = Array.isArray(body.image_urls)
+      ? body.image_urls.filter((u) => typeof u === "string" && u.trim())
+      : [];
+    const is_published = body.is_published === true;
+    const order = Number(body.order ?? 0);
+
+    if (!title) {
+      return res.status(400).json({ success: false, message: "Title is required" });
+    }
+
+    const post = await DonationPost.create({
+      title,
+      content,
+      image_urls,
+      is_published,
+      order,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        _id: post._id,
+        title: post.title,
+        content: post.content || "",
+        image_urls: post.image_urls || [],
+        is_published: post.is_published === true,
+        order: post.order ?? 0,
+        createdAt: post.createdAt,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Admin: update donation post
+app.patch("/api/admin/donations/posts/:id", authMiddleware, requireRole("super_admin", "admin"), async (req, res) => {
+  try {
+    const body = req.body || {};
+    const updates = {};
+    if (typeof body.title === "string") updates.title = body.title;
+    if (typeof body.content === "string") updates.content = body.content;
+    if (Array.isArray(body.image_urls)) updates.image_urls = body.image_urls;
+    if (typeof body.is_published === "boolean") updates.is_published = body.is_published;
+    if (typeof body.order === "number") updates.order = body.order;
+
+    const post = await DonationPost.findByIdAndUpdate(req.params.id, { $set: updates }, { new: true }).lean();
+    if (!post) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        _id: post._id,
+        title: post.title,
+        content: post.content || "",
+        image_urls: post.image_urls || [],
+        is_published: post.is_published === true,
+        order: post.order ?? 0,
+        createdAt: post.createdAt,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Admin: delete donation post
+app.delete("/api/admin/donations/posts/:id", authMiddleware, requireRole("super_admin", "admin"), async (req, res) => {
+  try {
+    const post = await DonationPost.findByIdAndDelete(req.params.id);
+    if (!post) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+    res.json({ success: true, data: { _id: post._id } });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
 
 /**
  * @swagger
