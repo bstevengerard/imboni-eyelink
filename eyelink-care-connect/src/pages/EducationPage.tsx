@@ -141,38 +141,37 @@ export default function EducationPage() {
                     {topic.description && (
                       <p className="text-muted-foreground mb-4">{topic.description}</p>
                     )}
-{topic.articles && topic.articles.length > 0 && (
-                       <ul className="space-y-2">
-                         {topic.articles.map((article) => {
-                           const isUrl = article.startsWith('http://') || article.startsWith('https://');
-                           return (
-                             <li key={article} className="flex items-center gap-2 text-sm">
-                               <FileText className="w-4 h-4 text-accent" />
-                               {isUrl ? (
-                                 <a 
-                                   href={article} 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   className="text-accent hover:underline truncate"
-                                 >
-                                   {new URL(article).pathname.split('/').pop() || article}
-                                 </a>
-                               ) : (
-                                 <span className="truncate">{article}</span>
-                               )}
-                             </li>
-                           );
-                         })}
-                       </ul>
-                     )}
-                     <div className="mt-4 h-1 w-0 group-hover:w-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500" />
-                   </div>
-                 </div>
-               ))}
-             </div>
-           )}
-         </div>
-       </section>
+                    {topic.articles && topic.articles.length > 0 && (
+                      <ul className="space-y-2">
+                        {topic.articles.map((article) => {
+                          const isUrl = article.startsWith('http://') || article.startsWith('https://');
+                          return (
+                            <li key={article} className="flex items-center gap-2 text-sm">
+                              <FileText className="w-4 h-4 text-accent" />
+                              {isUrl ? (
+                                <a 
+                                  href={article} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-accent hover:underline truncate"
+                                >
+                                  {new URL(article).pathname.split('/').pop() || article}
+                                </a>
+                              ) : (
+                                <span className="truncate">{article}</span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Myth Busters */}
       {myths.length > 0 && (

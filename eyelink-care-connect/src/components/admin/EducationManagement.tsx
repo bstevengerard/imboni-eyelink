@@ -631,22 +631,21 @@ export default function EducationManagement() {
                      rows={4}
                    />
                  </div>
-                </div>
-              </>
-            )}
-            {formData.content_type === "myth" && (
-              <>
-                <div className="md:col-span-2">
-                  <Label htmlFor="myth_text">Myth Statement *</Label>
-                  <Textarea
-                    id="myth_text"
-                    value={formData.myth_text}
-                    onChange={(e) => setFormData({ ...formData, myth_text: e.target.value })}
-                    rows={2}
-                    required
-                  />
-                </div>
-                <div className="md:col-span-2">
+               </>
+             )}
+             {formData.content_type === "myth" && (
+               <>
+                 <div className="md:col-span-2">
+                   <Label htmlFor="myth_text">Myth Statement *</Label>
+                   <Textarea
+                     id="myth_text"
+                     value={formData.myth_text}
+                     onChange={(e) => setFormData({ ...formData, myth_text: e.target.value })}
+                     rows={2}
+                     required
+                   />
+                 </div>
+                 <div className="md:col-span-2">
                   <Label htmlFor="fact_text">Fact Statement *</Label>
                   <Textarea
                     id="fact_text"
