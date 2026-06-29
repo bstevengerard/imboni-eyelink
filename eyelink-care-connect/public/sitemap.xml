@@ -91,11 +91,18 @@
     <priority>0.5</priority>
   </url>
 
-  <url>
-    <loc>https://imbonieyelink.org/cookies</loc>
-    <lastmod>2026-06-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
+   <url>
+     <loc>https://imbonieyelink.org/cookies</loc>
+     <lastmod>2026-06-26</lastmod>
+     <changefreq>monthly</changefreq>
+     <priority>0.5</priority>
+   </url>
+
+   <url>
+     <loc>https://imbonieyelink.org/donate</loc>
+     <lastmod>2026-06-29</lastmod>
+     <changefreq>monthly</changefreq>
+     <priority>0.8</priority>
+   </url>
 </urlset>
 
