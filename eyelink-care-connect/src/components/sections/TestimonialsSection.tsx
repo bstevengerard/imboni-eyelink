@@ -78,7 +78,7 @@ export default function TestimonialsSection() {
             Success Stories
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            What Our Patients Say
+            What Our Testimonials Say about us!
           </h2>
           <p className="text-lg text-muted-foreground">
             Real stories posted by the IMBONI admin team from people transformed through our eye care services.
