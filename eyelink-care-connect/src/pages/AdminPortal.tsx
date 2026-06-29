@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Calendar, Truck, Building2,
   BarChart3, Settings, LogOut, Menu, Shield, Users as UsersIcon,
   Stethoscope, TrendingUp, Activity, Eye, HeartPulse, ArrowRight,
-  Clock, UserCheck, Sparkles, Star, Flag, Mail, BookOpen, Heart
+  Clock, UserCheck, Sparkles, Star, Flag, Mail, BookOpen, Heart, BookText
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -25,6 +25,7 @@ import AdminAppointments from "@/components/admin/Appointments";
 import ContactMessages from "@/components/admin/ContactMessages";
 import ResearchLibrary from "@/components/admin/ResearchLibrary";
 import DonationManagement from "@/components/admin/DonationManagement";
+import EducationManagement from "@/components/admin/EducationManagement";
 import { useLiveEvents } from "@/hooks/useLiveEvents";
 import LiveActivityFeed from "@/components/dashboard/LiveActivityFeed";
 
@@ -36,6 +37,7 @@ const navigation = [
   { name: 'Success Stories', icon: Star, href: '/admin/success-stories', component: 'successStories' },
   { name: 'Our Journey', icon: Flag, href: '/admin/journey', component: 'journey' },
   { name: 'Research Library', icon: BookOpen, href: '/admin/research', component: 'research' },
+  { name: 'Education Content', icon: BookText, href: '/admin/education', component: 'education' },
   { name: 'Appointments', icon: Calendar, href: '/admin/appointments', component: 'appointments' },
   { name: 'Contact Messages', icon: Mail, href: '/admin/contact-messages', component: 'contactMessages' },
   { name: 'Mobile Clinics', icon: Truck, href: '/admin/clinics', component: 'clinics' },
@@ -219,7 +221,7 @@ export default function AdminPortal() {
               <LiveActivityFeed events={liveEvents} title="Live platform activity" />
 
               {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button onClick={() => navigate('/admin/users')} className="group flex items-center gap-4 p-5 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
                   <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                     <UserCheck className="w-6 h-6" />
@@ -249,6 +251,17 @@ export default function AdminPortal() {
                   <div className="text-left flex-1">
                     <p className="font-semibold">Hospitals</p>
                     <p className="text-sm text-muted-foreground">Manage hospital network</p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </button>
+
+                <button onClick={() => navigate('/admin/education')} className="group flex items-center gap-4 p-5 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
+                  <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <BookText className="w-6 h-6" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="font-semibold">Education</p>
+                    <p className="text-sm text-muted-foreground">Manage topics and content</p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                 </button>
@@ -315,6 +328,7 @@ export default function AdminPortal() {
           {activeNav.component === 'successStories' && <SuccessStories />}
           {activeNav.component === 'journey' && <JourneyMilestones />}
           {activeNav.component === 'research' && <ResearchLibrary />}
+          {activeNav.component === 'education' && <EducationManagement />}
           {activeNav.component === 'hospitals' && <HospitalManagement />}
           {activeNav.component === 'donations' && <DonationManagement />}
           {activeNav.component === 'clinics' && <MobileClinics />}

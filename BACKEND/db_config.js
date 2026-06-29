@@ -399,8 +399,7 @@ async function ensureCollections() {
     Notification, MobileClinic, ClinicSchedule, Conversation, Message,
     Referral, DoctorRating, Setting, ContactMessage, TeamMember,
     Testimonial, JourneyMilestone, ResearchArticle, WaitingRoom,
-    DonationSettings, DonationPost, Donation,
-    IdCounter
+  DonationSettings, DonationPost, Donation, EducationContent, IdCounter
   ];
   const existing = await db.listCollections().toArray();
   const existingNames = new Set(existing.map((c) => c.name));
@@ -546,6 +545,26 @@ const DonationSettings = mongoose.model("DonationSettings", donationSettingsSche
 const DonationPost = mongoose.model("DonationPost", donationPostSchema);
 const Donation = mongoose.model("Donation", donationSchema);
 
+const educationContentSchema = new mongoose.Schema({
+  content_type: {
+    type: String,
+    enum: ["topic", "myth", "symptom"],
+    required: true,
+  },
+  title: { type: String },
+  description: { type: String },
+  icon: { type: String, default: "BookOpen" },
+  articles: [{ type: String }],
+  myth_text: { type: String },
+  fact_text: { type: String },
+  symptom_text: { type: String },
+  order: { type: Number, default: 0 },
+  is_published: { type: Boolean, default: true },
+}, { timestamps: true });
+
+educationContentSchema.index({ content_type: 1, order: 1 });
+const EducationContent = mongoose.model("EducationContent", educationContentSchema);
+
 module.exports = {
   initDb,
   generatePatientId,
@@ -573,4 +592,5 @@ module.exports = {
   DonationSettings,
   DonationPost,
   Donation,
+  EducationContent,
 };

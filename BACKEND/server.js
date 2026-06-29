@@ -38,6 +38,7 @@ const {
   WaitingRoom,
   DonationSettings,
   DonationPost,
+  EducationContent,
 } = require("./db_config");
 const { setupSwagger } = require("./swagger");
 
@@ -2239,6 +2240,109 @@ app.delete(
         return res.status(404).json({ success: false, message: "Article not found" });
       }
       res.json({ success: true, message: "Article deleted" });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+// ============== EDUCATION CONTENT ==============
+
+app.get("/api/education", async (req, res) => {
+  try {
+    const content = await EducationContent.find({ is_published: true }).sort({ content_type: 1, order: 1 }).lean();
+    res.json({ success: true, data: content });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+app.get(
+  "/api/admin/education",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    try {
+      const content = await EducationContent.find({}).sort({ content_type: 1, order: 1 }).lean();
+      res.json({ success: true, data: content });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+app.post(
+  "/api/admin/education",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    const body = req.body || {};
+    const content_type = typeof body.content_type === "string" ? body.content_type.trim() : "";
+    if (!content_type || !["topic", "myth", "symptom"].includes(content_type)) {
+      return res.status(400).json({ success: false, message: "Valid content_type (topic, myth, symptom) is required" });
+    }
+    try {
+      const item = await EducationContent.create({
+        content_type,
+        title: typeof body.title === "string" ? body.title.trim() : undefined,
+        description: typeof body.description === "string" ? body.description.trim() : undefined,
+        icon: typeof body.icon === "string" ? body.icon.trim() : "BookOpen",
+        articles: Array.isArray(body.articles) ? body.articles.filter((a: any) => typeof a === "string" && a.trim()) : [],
+        myth_text: typeof body.myth_text === "string" ? body.myth_text.trim() : undefined,
+        fact_text: typeof body.fact_text === "string" ? body.fact_text.trim() : undefined,
+        symptom_text: typeof body.symptom_text === "string" ? body.symptom_text.trim() : undefined,
+        order: Number(body.order) || 0,
+        is_published: body.is_published !== false,
+      });
+      res.status(201).json({ success: true, data: item });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+app.patch(
+  "/api/admin/education/:id",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    const body = req.body || {};
+    const update = {};
+    if (typeof body.content_type === "string" && ["topic", "myth", "symptom"].includes(body.content_type.trim())) {
+      update.content_type = body.content_type.trim();
+    }
+    if (typeof body.title === "string") update.title = body.title.trim();
+    if (typeof body.description === "string") update.description = body.description.trim();
+    if (typeof body.icon === "string") update.icon = body.icon.trim();
+    if (Array.isArray(body.articles)) update.articles = body.articles.filter((a: any) => typeof a === "string" && a.trim());
+    if (typeof body.myth_text === "string") update.myth_text = body.myth_text.trim();
+    if (typeof body.fact_text === "string") update.fact_text = body.fact_text.trim();
+    if (typeof body.symptom_text === "string") update.symptom_text = body.symptom_text.trim();
+    if (typeof body.order === "number") update.order = body.order;
+    if (typeof body.is_published === "boolean") update.is_published = body.is_published;
+    try {
+      const item = await EducationContent.findByIdAndUpdate(req.params.id, update, { new: true });
+      if (!item) {
+        return res.status(404).json({ success: false, message: "Content not found" });
+      }
+      res.json({ success: true, data: item });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  },
+);
+
+app.delete(
+  "/api/admin/education/:id",
+  authMiddleware,
+  requireRole("super_admin", "admin"),
+  async (req, res) => {
+    try {
+      const item = await EducationContent.findByIdAndDelete(req.params.id);
+      if (!item) {
+        return res.status(404).json({ success: false, message: "Content not found" });
+      }
+      res.json({ success: true, message: "Content deleted" });
     } catch (e) {
       res.status(500).json({ success: false, message: e.message });
     }
