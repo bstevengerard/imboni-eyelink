@@ -219,52 +219,81 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section id="team" className="py-16 lg:py-24">
+      <section id="team" className="py-16 lg:py-28 bg-muted/20">
         <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Leadership Team</h2>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Our Leadership Team</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Meet the dedicated professionals leading IMBONI EyeLink's mission
+              Meet the dedicated professionals driving innovation and excellence at IMBONI EyeLink
             </p>
           </div>
           
           {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="card-elevated p-6 text-center animate-pulse">
-                  <div className="w-24 h-24 rounded-full bg-muted mx-auto mb-4" />
-                  <div className="h-5 bg-muted rounded mb-2" />
-                  <div className="h-4 bg-muted rounded w-2/3 mx-auto" />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="card-elevated overflow-hidden animate-pulse">
+                  <div className="aspect-[4/3] bg-muted" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-6 bg-muted rounded w-2/3" />
+                    <div className="h-4 bg-muted rounded w-1/2" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                  </div>
                 </div>
               ))}
             </div>
           ) : team.length === 0 ? (
-            <div className="text-center py-12">
-              <User className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No team members added yet.</p>
+            <div className="text-center py-16">
+              <User className="w-20 h-20 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground text-lg">Our leadership team will be featured here soon.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {team.map((member) => (
-                <div key={member._id} className="card-elevated p-6 text-center">
-                  {member.photo_url ? (
-                    <img
-                      src={member.photo_url}
-                      alt={member.name}
-                      className="w-24 h-24 rounded-full object-cover mx-auto mb-4"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-white">
-                        {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
-                      </span>
+                <div
+                  key={member._id}
+                  className="group card-elevated overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
+                    {member.photo_url ? (
+                      <img
+                        src={member.photo_url}
+                        alt={member.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-4xl font-bold text-white shadow-lg">
+                          {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                      <p className="text-white text-sm font-medium line-clamp-3">
+                        {member.bio || "Dedicated to transforming eye care through innovation and compassion."}
+                      </p>
                     </div>
-                  )}
-                  <h3 className="font-semibold text-lg">{member.name}</h3>
-                  <p className="text-primary text-sm">{member.role}</p>
-                  {member.specialty && (
-                    <p className="text-muted-foreground text-sm mt-1">{member.specialty}</p>
-                  )}
+                  </div>
+                  <div className="p-6 bg-card">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div>
+                        <h3 className="font-bold text-xl group-hover:text-primary transition-colors">{member.name}</h3>
+                        <p className="text-primary font-semibold text-sm mt-1">{member.role}</p>
+                      </div>
+                      {member.specialty && (
+                        <span className="shrink-0 text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
+                          {member.specialty}
+                        </span>
+                      )}
+                    </div>
+                    {member.bio && (
+                      <p className="text-muted-foreground text-sm mt-3 line-clamp-2 leading-relaxed">
+                        {member.bio}
+                      </p>
+                    )}
+                    <div className="mt-4 h-1 w-0 group-hover:w-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500" />
+                  </div>
                 </div>
               ))}
             </div>
