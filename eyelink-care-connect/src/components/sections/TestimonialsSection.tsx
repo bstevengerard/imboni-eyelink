@@ -81,7 +81,7 @@ export default function TestimonialsSection() {
             What Our Testimonials Say about us!
           </h2>
           <p className="text-lg text-muted-foreground">
-            Real stories posted by the IMBONI admin team from people transformed through our eye care services.
+            Real stories from the people transformed through our eye care services.
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default function TestimonialsSection() {
                 <Quote className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No success stories yet</h3>
                 <p className="text-muted-foreground">
-                  Success stories will appear here after an admin posts them.
+                  Success stories will appear here once they're available.
                 </p>
               </div>
             ) : currentTestimonial && (
