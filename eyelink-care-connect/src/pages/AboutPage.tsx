@@ -302,30 +302,30 @@ export default function AboutPage() {
       </section>
 
       {/* Impact Stats */}
-      <section className="py-16 lg:py-24 relative overflow-hidden">
+      <section className="py-12 lg:py-16 relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${impactImage})` }}
         />
         <div className="absolute inset-0 bg-primary/95" />
         <div className="container relative z-10 text-white">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Impact</h2>
-          <div className="grid md:grid-cols-4 gap-8 text-center">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 lg:mb-10">Our Impact</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 text-center">
             <div>
-              <div className="text-5xl font-bold mb-2">50K+</div>
-              <div className="text-white/80">Patients Served</div>
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">50K+</div>
+              <div className="text-white/80 text-sm md:text-base">Patients Served</div>
             </div>
             <div>
-              <div className="text-5xl font-bold mb-2">30+</div>
-              <div className="text-white/80">Districts Reached</div>
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">30+</div>
+              <div className="text-white/80 text-sm md:text-base">Districts Reached</div>
             </div>
             <div>
-              <div className="text-5xl font-bold mb-2">10</div>
-              <div className="text-white/80">Partner Hospitals</div>
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">10</div>
+              <div className="text-white/80 text-sm md:text-base">Partner Hospitals</div>
             </div>
             <div>
-              <div className="text-5xl font-bold mb-2">5K+</div>
-              <div className="text-white/80">Surgeries Performed</div>
+              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">5K+</div>
+              <div className="text-white/80 text-sm md:text-base">Surgeries Performed</div>
             </div>
           </div>
         </div>
