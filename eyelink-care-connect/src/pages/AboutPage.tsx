@@ -247,9 +247,9 @@ export default function AboutPage() {
                <p className="text-muted-foreground">Our leadership team will be featured here soon.</p>
              </div>
            ) : (
-             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-               {team.map((member) => (
-<div
+<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {team.map((member) => (
+                  <div
                     key={member._id}
                     className="group card-elevated overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
                   >
@@ -279,19 +279,14 @@ export default function AboutPage() {
                       <p className="text-primary text-sm font-medium mt-1">{member.role}</p>
                       {member.specialty && (
                         <span className="inline-block text-xs bg-primary/10 text-primary px-2 py-1 rounded-full mt-2">
-                          {member.specialty}
+{member.specialty}
                         </span>
-                      )}
-                      {member.bio && (
-                        <p className="text-muted-foreground text-sm mt-3">
-                          {member.bio}
-                        </p>
                       )}
                     </div>
                   </div>
-               ))}
-             </div>
-           )}
+                ))}
+              </div>
+            )}
         </div>
       </section>
 
