@@ -249,40 +249,40 @@ export default function AboutPage() {
            ) : (
              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                {team.map((member) => (
-                 <div
-                   key={member._id}
-                   className="group rounded-xl overflow-hidden bg-card border border-border transition-all duration-300 hover:shadow-lg"
-                 >
-                   <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
-                     {member.photo_url ? (
-                       <img
-                         src={member.photo_url}
-                         alt={member.name}
-                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                       />
-                     ) : (
-                       <div className="w-full h-full flex items-center justify-center">
-                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl font-bold text-white">
-                           {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
-                         </div>
-                       </div>
-                     )}
-                   </div>
-                   <div className="p-4 bg-card">
-                     <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{member.name}</h3>
-                     <p className="text-primary text-sm font-medium mt-1">{member.role}</p>
-                     {member.specialty && (
-                       <span className="inline-block text-xs bg-primary/10 text-primary px-2 py-1 rounded-full mt-2">
-                         {member.specialty}
-                       </span>
-                     )}
-                     {member.bio && (
-                       <p className="text-muted-foreground text-sm mt-3">
-                         {member.bio}
-                       </p>
-                     )}
-                   </div>
-                 </div>
+<div
+                    key={member._id}
+                    className="group rounded-xl overflow-hidden bg-card border border-border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
+                      {member.photo_url ? (
+                        <img
+                          src={member.photo_url}
+                          alt={member.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl font-bold text-white">
+                            {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 bg-card">
+                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{member.name}</h3>
+                      <p className="text-primary text-sm font-medium mt-1">{member.role}</p>
+                      {member.specialty && (
+                        <span className="inline-block text-xs bg-primary/10 text-primary px-2 py-1 rounded-full mt-2">
+                          {member.specialty}
+                        </span>
+                      )}
+                      {member.bio && (
+                        <p className="text-muted-foreground text-sm mt-3">
+                          {member.bio}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                ))}
              </div>
            )}
