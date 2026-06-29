@@ -69,7 +69,7 @@ export default function GoogleTranslate() {
       <Globe className="w-3.5 h-3.5 text-primary shrink-0" />
       <div
         id="google_translate_element"
-        className="google-translate-container text-xs"
+        className="google-translate-container text-xs notranslate"
       ></div>
     </div>
   );
