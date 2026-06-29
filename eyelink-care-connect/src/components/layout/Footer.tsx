@@ -3,23 +3,20 @@ import {
   MapPin,
   Phone,
   Mail,
-  Facebook,
-  Twitter,
   Linkedin,
   Instagram,
-  Heart
+  Twitter
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 const socialLinks = [
-  { name: 'Facebook', icon: Facebook, href: '#' },
-  { name: 'Twitter', icon: Twitter, href: '#' },
-  { name: 'LinkedIn', icon: Linkedin, href: '#' },
-  { name: 'Instagram', icon: Instagram, href: '#' },
+  { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/imbonieyelink' },
+  { name: 'Instagram', icon: Instagram, href: 'https://www.instagram.com/lmboni_eyelink?igsh=dGlwbnh2b2cxeWZz' },
+  { name: 'Twitter', icon: Twitter, href: 'https://x.com/IMBONIEyelink' },
 ];
 
 export default function Footer() {
-  const footerLinks = {
+   const footerLinks = {
     services: [
       { name: 'Eye Screening', href: '/services#screening' },
       { name: 'Tele-Consultation', href: '/services#teleconsultation' },
@@ -58,18 +55,6 @@ export default function Footer() {
             <p className="text-background/70 mb-4 max-w-sm mx-auto sm:mx-0 text-sm md:text-base">
               Connecting communities with quality eye care through innovative technology and mobile clinics.
             </p>
-            <div className="flex gap-3 justify-center sm:justify-start">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
-                  aria-label={social.name}
-                >
-                  <social.icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Services */}
@@ -135,17 +120,36 @@ export default function Footer() {
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-3">
                 <Phone className="h-4 w-4 text-secondary shrink-0" />
-                <a href="tel:+250788000000" className="text-background/70 hover:text-secondary text-sm">
-                  +250 788 000 000
+                <a href="tel:+2507350990930" className="text-background/70 hover:text-secondary text-sm">
+                  07350990930
                 </a>
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-3">
                 <Mail className="h-4 w-4 text-secondary shrink-0" />
-                <a href="mailto:info@imbonieyelink.rw" className="text-background/70 hover:text-secondary text-sm">
-                  info@imbonieyelink.rw
+                <a href="mailto:info.imbonieyelink@gmail.com" className="text-background/70 hover:text-secondary text-sm">
+                  info.imbonieyelink@gmail.com
                 </a>
               </li>
             </ul>
+          </div>
+
+          {/* Social Links */}
+          <div className="text-center sm:text-left">
+            <h3 className="font-semibold text-base mb-4">Follow Us</h3>
+            <div className="flex gap-3 justify-center sm:justify-start">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
+                  aria-label={social.name}
+                >
+                  <social.icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

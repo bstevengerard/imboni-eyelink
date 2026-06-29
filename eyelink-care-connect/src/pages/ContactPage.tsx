@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { 
-  MapPin, Phone, Mail, Clock, Send, Building2 
+  MapPin, Phone, Mail, Clock, Send 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
@@ -21,12 +21,12 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Call Us",
-    details: ["+250 788 123 456", "+250 722 987 654"],
+    details: ["07350990930", "0789001926"],
   },
   {
     icon: Mail,
     title: "Email Us",
-    details: ["info@imbonieyelink.rw", "support@imbonieyelink.rw"],
+    details: ["info.imbonieyelink@gmail.com"],
   },
   {
     icon: Clock,
@@ -249,23 +249,23 @@ export default function ContactPage() {
                 </div>
               </div>
               
-              {/* Quick Contact Options */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Other Ways to Reach Us</h3>
-                
-                <div className="card-elevated p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Phone className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Emergency Hotline</h4>
-                    <p className="text-sm text-muted-foreground">24/7 for urgent cases</p>
-                  </div>
-                  <Button size="sm" className="ml-auto">
-                    +250 788 000 000
-                  </Button>
-                </div>
-              </div>
+{/* Quick Contact Options */}
+               <div className="space-y-4">
+                 <h3 className="font-semibold text-lg">Other Ways to Reach Us</h3>
+                 
+                 <div className="card-elevated p-4 flex items-center gap-4">
+                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                     <Phone className="w-6 h-6 text-primary" />
+                   </div>
+                   <div>
+                     <h4 className="font-medium">Emergency Hotline</h4>
+                     <p className="text-sm text-muted-foreground">24/7 for urgent cases</p>
+                   </div>
+                   <Button size="sm" className="ml-auto">
+                     07350990930
+                   </Button>
+                 </div>
+               </div>
             </div>
           </div>
         </div>

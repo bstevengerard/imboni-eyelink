@@ -367,14 +367,14 @@ export default function TeamManagement() {
               {editMode ? "Edit Team Member" : "Add Team Member"}
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto pr-2">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto pr-2 pb-6">
             <div>
               <Label htmlFor="name">Full Name *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Dr. Jean Baptiste Karemera"
+                placeholder="Dr. XXXXXX"
                 required
               />
             </div>
@@ -462,22 +462,23 @@ export default function TeamManagement() {
                 min={0}
               />
             </div>
+
+            <DialogFooter className="mt-4 pt-4 border-t flex-shrink-0 md:col-span-2 sticky bottom-0 bg-background/95 backdrop-blur">
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={uploading}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={uploading}>
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {editMode ? "Saving..." : "Adding..."}
+                  </>
+                ) : (
+                  editMode ? "Save Changes" : "Add Team Member"
+                )}
+              </Button>
+            </DialogFooter>
           </form>
-          <DialogFooter className="mt-4 pt-4 border-t flex-shrink-0">
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={uploading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={uploading}>
-              {uploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {editMode ? "Saving..." : "Adding..."}
-                </>
-              ) : (
-                editMode ? "Save Changes" : "Add Team Member"
-              )}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
