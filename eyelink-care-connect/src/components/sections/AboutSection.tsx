@@ -45,7 +45,7 @@ export default function AboutSection() {
             {/* Stats overlay - moved below image */}
             <div className="mt-6 bg-card rounded-xl p-4 shadow-lg inline-flex items-center gap-4">
               <div className="text-left">
-                <div className="text-2xl font-bold text-primary">Since 2024</div>
+                <div className="text-2xl font-bold text-primary">Since 2026</div>
                 <div className="text-sm text-muted-foreground">Serving Rwanda</div>
               </div>
             </div>
