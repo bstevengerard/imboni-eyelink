@@ -172,12 +172,7 @@ export default function EducationPage() {
              </div>
            )}
          </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
+       </section>
 
       {/* Myth Busters */}
       {myths.length > 0 && (
