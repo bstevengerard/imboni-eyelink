@@ -375,44 +375,22 @@ export default function EducationManagement() {
                   )}
                 </div>
 
-                {item.content_type === "topic" && item.articles && item.articles.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Articles ({item.articles.length})</p>
-                    <ul className="space-y-1">
-                      {item.articles.slice(0, 3).map((article, idx) => (
-                        <li key={idx} className="text-xs text-muted-foreground truncate">
-                          • {article}
-                        </li>
-                      ))}
-                      {item.articles.length > 3 && (
-                        <li className="text-xs text-muted-foreground">+{item.articles.length - 3} more</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-
-                {item.content_type === "myth" && (
-                  <div className="space-y-2">
-                    {item.myth_text && (
-                      <div>
-                        <p className="text-xs font-medium text-destructive mb-1">MYTH</p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{item.myth_text}</p>
-                      </div>
-                    )}
-                    {item.fact_text && (
-                      <div>
-                        <p className="text-xs font-medium text-accent mb-1">FACT</p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{item.fact_text}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {item.content_type === "symptom" && item.symptom_text && (
-                  <p className="text-xs text-muted-foreground line-clamp-2">{item.symptom_text}</p>
-                )}
-
-                <div className="flex gap-2 pt-2 border-t border-border">
+{item.content_type === "topic" && item.articles && item.articles.length > 0 && (
+                   <div>
+                     <p className="text-xs font-medium text-muted-foreground mb-2">Article URLs ({item.articles.length})</p>
+                     <ul className="space-y-1">
+                       {item.articles.slice(0, 3).map((article) => (
+                         <li key={article} className="text-xs text-muted-foreground truncate">
+                           • {article}
+                         </li>
+                       ))}
+                       {item.articles.length > 3 && (
+                         <li className="text-xs text-muted-foreground">+{item.articles.length - 3} more</li>
+                       )}
+                     </ul>
+                   </div>
+                 )}
+                 <div className="flex gap-2 pt-2 border-t border-border">
                   <Button size="sm" variant="outline" className="flex-1" onClick={() => handleOpenEdit(item)}>
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
@@ -497,16 +475,16 @@ export default function EducationManagement() {
                     rows={2}
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="articles">Articles (one per line)</Label>
-                  <Textarea
-                    id="articles"
-                    value={formData.articles}
-                    onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
-                    placeholder="Understanding Cataracts&#10;What is Glaucoma?&#10;Diabetic Retinopathy Explained"
-                    rows={4}
-                  />
-                </div>
+<div className="md:col-span-2">
+                   <Label htmlFor="articles">Article URLs (one per line)</Label>
+                   <Textarea
+                     id="articles"
+                     value={formData.articles}
+                     onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
+                     placeholder="https://example.com/catatcts&#10;https://example.com/glaucoma&#10;https://example.com/retinopathy"
+                     rows={4}
+                   />
+                 </div>
               </>
             )}
             {formData.content_type === "myth" && (
@@ -644,14 +622,15 @@ export default function EducationManagement() {
                     rows={2}
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="articles">Articles (one per line)</Label>
-                  <Textarea
-                    id="articles"
-                    value={formData.articles}
-                    onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
-                    rows={4}
-                  />
+<div className="md:col-span-2">
+                   <Label htmlFor="articles">Article URLs (one per line)</Label>
+                   <Textarea
+                     id="articles"
+                     value={formData.articles}
+                     onChange={(e) => setFormData({ ...formData, articles: e.target.value })}
+                     rows={4}
+                   />
+                 </div>
                 </div>
               </>
             )}
