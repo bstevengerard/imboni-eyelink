@@ -120,8 +120,8 @@ export default function MobileClinics() {
         toast({ title: "Error", description: "Please select an image file", variant: "destructive" });
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ title: "Error", description: "Image size must be less than 5MB", variant: "destructive" });
+      if (file.size > 10 * 1024 * 1024) {
+        toast({ title: "Error", description: "Image size must be less than 10MB", variant: "destructive" });
         return;
       }
       setClinicFile(file);
