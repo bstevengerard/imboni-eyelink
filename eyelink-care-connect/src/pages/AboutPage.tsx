@@ -219,74 +219,67 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section id="team" className="py-16 lg:py-28 bg-muted/20">
+      <section id="team" className="py-6 lg:py-8 bg-muted/20">
         <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Our Leadership Team</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">Our Leadership Team</h2>
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
               Meet the dedicated professionals driving innovation and excellence at IMBONI EyeLink
             </p>
           </div>
           
-{loading ? (
-             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-               {[1, 2, 3].map((i) => (
-                 <div key={i} className="overflow-hidden animate-pulse">
-                   <div className="aspect-[4/3] bg-muted" />
-                   <div className="p-4 space-y-3">
-                     <div className="h-5 bg-muted rounded w-2/3" />
-                     <div className="h-3 bg-muted rounded w-1/2" />
-                     <div className="h-3 bg-muted rounded w-full" />
-                   </div>
-                 </div>
-               ))}
-             </div>
-           ) : team.length === 0 ? (
-             <div className="text-center py-12">
-               <User className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-               <p className="text-muted-foreground">Our leadership team will be featured here soon.</p>
-             </div>
-           ) : (
-<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {team.map((member) => (
-                  <div
-                    key={member._id}
-                    className="group card-elevated overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
-                  >
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
-                      {member.photo_url ? (
-                        <img
-                          src={member.photo_url}
-                          alt={member.name}
-                          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl font-bold text-white">
-                            {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
-                          </div>
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                        <p className="text-white text-sm font-medium">
-                          {member.bio || "Dedicated to transforming eye care through innovation and compassion."}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="p-2 bg-card">
-                      <h3 className="font-semibold text-base group-hover:text-primary transition-colors">{member.name}</h3>
-                      <p className="text-primary text-xs font-medium mt-1">{member.role}</p>
-                      {member.specialty && (
-                        <span className="inline-block text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full mt-1.5">
-                          {member.specialty}
-                        </span>
-                      )}
-                    </div>
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="overflow-hidden animate-pulse">
+                  <div className="aspect-[4/5] bg-muted" />
+                  <div className="p-1 space-y-1">
+                    <div className="h-2 bg-muted rounded w-2/3" />
+                    <div className="h-1.5 bg-muted rounded w-1/2" />
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
+          ) : team.length === 0 ? (
+            <div className="text-center py-16">
+              <User className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground">Our leadership team will be featured here soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5">
+              {team.map((member) => (
+                <div
+                  key={member._id}
+                  className="group rounded-md overflow-hidden bg-card border border-border transition-all duration-200 hover:shadow-sm"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
+                    {member.photo_url ? (
+                      <img
+                        src={member.photo_url}
+                        alt={member.name}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[9px] font-bold text-white">
+                          {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-1">
+                    <h3 className="font-semibold text-[10px] truncate">{member.name}</h3>
+                    <p className="text-primary text-[8px] font-medium mt-0 truncate">{member.role}</p>
+                    {member.specialty && (
+                      <span className="inline-block text-[6px] bg-primary/10 text-primary px-0.5 py-0 rounded-full mt-0.5 truncate">
+                        {member.specialty}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -298,23 +291,23 @@ export default function AboutPage() {
         />
         <div className="absolute inset-0 bg-primary/95" />
         <div className="container relative z-10 text-white">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 lg:mb-10">Our Impact</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 text-center">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-center mb-6">Our Impact</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">50K+</div>
-              <div className="text-white/80 text-sm md:text-base">Patients Served</div>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">50K+</div>
+              <div className="text-white/80 text-xs md:text-sm">Patients Served</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">30+</div>
-              <div className="text-white/80 text-sm md:text-base">Districts Reached</div>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">30+</div>
+              <div className="text-white/80 text-xs md:text-sm">Districts Reached</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">10</div>
-              <div className="text-white/80 text-sm md:text-base">Partner Hospitals</div>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">10</div>
+              <div className="text-white/80 text-xs md:text-sm">Partner Hospitals</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">5K+</div>
-              <div className="text-white/80 text-sm md:text-base">Surgeries Performed</div>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">5K+</div>
+              <div className="text-white/80 text-xs md:text-sm">Surgeries Performed</div>
             </div>
           </div>
         </div>
