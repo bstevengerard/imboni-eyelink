@@ -250,7 +250,7 @@ export default function AboutPage() {
               {team.map((member) => (
                 <div
                   key={member._id}
-                  className="group rounded-md overflow-hidden bg-card border border-border transition-all duration-200 hover:shadow-sm"
+                  className="group rounded-md overflow-hidden bg-card border border-border transition-all duration-200 hover:shadow-md"
                 >
                   <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
                     {member.photo_url ? (
@@ -266,6 +266,12 @@ export default function AboutPage() {
                         </div>
                       </div>
                     )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    <div className="absolute bottom-0 left-0 right-0 p-1.5 translate-y-1 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                      <p className="text-white text-[7px] font-medium leading-tight line-clamp-2">
+                        {member.bio || "Dedicated to transforming eye care."}
+                      </p>
+                    </div>
                   </div>
                   <div className="p-1">
                     <h3 className="font-semibold text-[10px] truncate">{member.name}</h3>
