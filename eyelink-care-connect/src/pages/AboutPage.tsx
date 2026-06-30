@@ -266,11 +266,12 @@ export default function AboutPage() {
                         </div>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-transparent transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
-                    <div className="absolute bottom-0 left-0 right-0 p-2 transition-all duration-200 translate-y-3 group-hover:translate-y-0 opacity-0 group-hover:opacity-100">
-                      <p className="text-white text-xs font-medium leading-tight line-clamp-2">
-                        {member.bio || "Dedicated to transforming eye care."}
-                      </p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/60 to-transparent transition-opacity duration-200 opacity-0 group-hover:opacity-100 flex items-end">
+                      <div className="w-full p-2 transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+                        <p className="text-white text-xs font-medium leading-tight line-clamp-3">
+                          {member.bio || "Dedicated to transforming eye care."}
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="p-1.5">
