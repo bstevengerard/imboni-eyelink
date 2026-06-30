@@ -210,7 +210,7 @@ console.log(`[server] MONGO_URI configured:`, !!process.env.MONGO_URI);
 
 const app = express();
 app.use(cors({ origin: corsOrigins }));
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 
 // Health check (no auth required)
 app.get('/health', (req, res) => {
