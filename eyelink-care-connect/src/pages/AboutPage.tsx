@@ -219,23 +219,23 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section id="team" className="py-4 lg:py-6 bg-muted/20">
+      <section id="team" className="py-8 lg:py-12 bg-muted/20">
         <div className="container">
-          <div className="text-center mb-4">
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold mb-1">Our Leadership Team</h2>
-            <p className="text-xs text-muted-foreground max-w-2xl mx-auto">
-              Meet our dedicated professionals
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">Our Leadership Team</h2>
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+              Meet the dedicated professionals driving innovation and excellence at IMBONI EyeLink
             </p>
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="overflow-hidden animate-pulse">
-                  <div className="aspect-[3/4] bg-muted" />
-                  <div className="p-0.5 space-y-0.5">
-                    <div className="h-1.5 bg-muted rounded w-2/3" />
-                    <div className="h-1 bg-muted rounded w-1/2" />
+                  <div className="aspect-[4/5] bg-muted" />
+                  <div className="p-1.5 space-y-1">
+                    <div className="h-3 bg-muted rounded w-2/3" />
+                    <div className="h-2.5 bg-muted rounded w-1/2" />
                   </div>
                 </div>
               ))}
@@ -246,13 +246,13 @@ export default function AboutPage() {
               <p className="text-muted-foreground">Our leadership team will be featured here soon.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {team.map((member) => (
                 <div
                   key={member._id}
-                  className="group rounded-sm overflow-hidden bg-card border border-border transition-all duration-200 hover:shadow-sm"
+                  className="group rounded-md overflow-hidden bg-card border border-border transition-all duration-200 hover:shadow-md"
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
                     {member.photo_url ? (
                       <img
                         src={member.photo_url}
@@ -261,23 +261,23 @@ export default function AboutPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[7px] font-bold text-white">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-white">
                           {member.name.split(' ').slice(1, 3).map(n => n[0]).join('')}
                         </div>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    <div className="absolute bottom-0 left-0 right-0 p-1 translate-y-0.5 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                      <p className="text-white text-[6px] leading-tight line-clamp-1">
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    <div className="absolute bottom-0 left-0 right-0 p-2 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                      <p className="text-white text-xs font-medium leading-tight line-clamp-2">
                         {member.bio || "Dedicated to transforming eye care."}
                       </p>
                     </div>
                   </div>
-                  <div className="p-0.5">
-                    <h3 className="font-semibold text-[8px] truncate">{member.name}</h3>
-                    <p className="text-primary text-[7px] font-medium mt-0 truncate">{member.role}</p>
+                  <div className="p-1.5">
+                    <h3 className="font-semibold text-sm truncate">{member.name}</h3>
+                    <p className="text-primary text-xs font-medium mt-0.5 truncate">{member.role}</p>
                     {member.specialty && (
-                      <span className="inline-block text-[5px] bg-primary/10 text-primary px-0.5 py-0 rounded-full mt-0.5 truncate">
+                      <span className="inline-block text-[10px] bg-primary/10 text-primary px-1 py-0 rounded-full mt-1 truncate">
                         {member.specialty}
                       </span>
                     )}
