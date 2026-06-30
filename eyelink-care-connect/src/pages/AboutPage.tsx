@@ -274,12 +274,12 @@ export default function AboutPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="p-4 bg-card">
-                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{member.name}</h3>
-                      <p className="text-primary text-sm font-medium mt-1">{member.role}</p>
+                    <div className="p-3 bg-card">
+                      <h3 className="font-semibold text-base group-hover:text-primary transition-colors">{member.name}</h3>
+                      <p className="text-primary text-xs font-medium mt-1">{member.role}</p>
                       {member.specialty && (
-                        <span className="inline-block text-xs bg-primary/10 text-primary px-2 py-1 rounded-full mt-2">
-{member.specialty}
+                        <span className="inline-block text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full mt-1.5">
+                          {member.specialty}
                         </span>
                       )}
                     </div>
