@@ -266,8 +266,8 @@ export default function AboutPage() {
                         </div>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pb-4">
-                      <p className="text-white text-xs font-medium leading-tight text-center line-clamp-4 px-2">
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center px-2">
+                      <p className="text-white text-xs font-medium leading-relaxed text-center">
                         {member.bio || "Dedicated to transforming eye care."}
                       </p>
                     </div>
