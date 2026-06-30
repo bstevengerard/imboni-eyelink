@@ -274,7 +274,7 @@ export default function AboutPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="p-3 bg-card">
+                    <div className="p-2 bg-card">
                       <h3 className="font-semibold text-base group-hover:text-primary transition-colors">{member.name}</h3>
                       <p className="text-primary text-xs font-medium mt-1">{member.role}</p>
                       {member.specialty && (
