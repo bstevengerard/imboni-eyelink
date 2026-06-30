@@ -425,7 +425,7 @@ export default function MobileClinics() {
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center flex-shrink-0">
                       {clinic.photo_url ? (
-                        <img src={clinic.photo_url} alt={clinic.name} className="w-full h-full object-cover" />
+                        <img src={clinic.photo_url} alt={clinic.name} className="w-full h-full object-cover object-center" />
                       ) : (
                         <Truck className="w-7 h-7 text-primary" />
                       )}

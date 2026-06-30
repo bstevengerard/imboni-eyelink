@@ -316,7 +316,7 @@ if (file.size > 10 * 1024 * 1024) {
                   <img
                     src={member.photo_url}
                     alt={member.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted/50">
@@ -409,7 +409,7 @@ if (file.size > 10 * 1024 * 1024) {
                     <img
                       src={previewUrl || formData.photo_url}
                       alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
+                      className="w-32 h-32 object-cover object-center rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={() => fileInputRef.current?.click()}
                       title="Click to replace photo"
                     />

@@ -340,7 +340,7 @@ export default function HospitalManagement() {
                       <div className="flex items-center gap-3 min-w-[260px]">
                         <div className="w-9 h-9 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
                           {hospital.photo_url ? (
-                            <img src={hospital.photo_url} alt={hospital.name} className="w-full h-full object-cover" />
+                            <img src={hospital.photo_url} alt={hospital.name} className="w-full h-full object-cover object-center" />
                           ) : (
                             <Building2 className="w-5 h-5 text-primary" />
                           )}

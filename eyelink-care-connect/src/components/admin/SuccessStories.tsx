@@ -451,7 +451,7 @@ export default function SuccessStories() {
                 <div className="flex items-start gap-4">
                   {(previewUrl || form.image_url) ? (
                     <div className="relative h-28 w-28 shrink-0 rounded-2xl overflow-hidden border bg-muted">
-                      <img src={previewUrl || form.image_url} alt="Story preview" className="h-full w-full object-cover" />
+                      <img src={previewUrl || form.image_url} alt="Story preview" className="h-full w-full object-cover object-center" />
                       <Button
                         type="button"
                         variant="destructive"

@@ -340,7 +340,7 @@ if (file.size > 10 * 1024 * 1024) {
                     <img
                       src={post.image_urls[0]}
                       alt={post.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = "none";
@@ -404,12 +404,12 @@ if (file.size > 10 * 1024 * 1024) {
               <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="h-10" />
               {previewUrl && (
                 <div className="mt-2 w-full h-32 bg-muted rounded overflow-hidden">
-                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover object-center" />
                 </div>
               )}
               {!previewUrl && formData.image_urls.length > 0 && (
                 <div className="mt-2 w-full h-32 bg-muted rounded overflow-hidden">
-                  <img src={formData.image_urls[0]} alt="Existing" className="w-full h-full object-cover" />
+                  <img src={formData.image_urls[0]} alt="Existing" className="w-full h-full object-cover object-center" />
                 </div>
               )}
             </div>
