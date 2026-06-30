@@ -253,12 +253,12 @@ export default function AboutPage() {
                     key={member._id}
                     className="group card-elevated overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
                   >
-                    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
                       {member.photo_url ? (
                         <img
                           src={member.photo_url}
                           alt={member.name}
-                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
